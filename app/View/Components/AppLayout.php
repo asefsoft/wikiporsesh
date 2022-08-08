@@ -13,6 +13,7 @@ class AppLayout extends Component
      */
     public function render()
     {
+//        request()->session()->flash('flash.banner', 'Yay it works!');
         return view('layouts.app');
     }
 }
