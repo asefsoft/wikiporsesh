@@ -19,13 +19,13 @@ return new class extends Migration
             $table->unsignedBigInteger('author_id');
             $table->unsignedBigInteger('url_id');
             $table->string('slug', 150)->index();
+            $table->tinyInteger('total_sections');
             $table->string('title_fa',300)->nullable();
             $table->string('title_en',300);
             $table->string('tips_fa',500)->nullable();
             $table->string('tips_en',500)->nullable();
             $table->string('warnings_en',500)->nullable();
             $table->string('warnings_fa',500)->nullable();
-            $table->tinyInteger('total_sections');
             $table->boolean('has_steps');
             $table->string('steps_type', 30);
             $table->integer('views')->default(0);

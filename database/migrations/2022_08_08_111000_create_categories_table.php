@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('parent_category_id')->nullable();
             $table->string('name_fa', 50);
-            $table->string('name_en', 50);
-            $table->string('slug', 50)->index();
+            $table->string('name_en', 50)->unique();
+            $table->string('slug', 50)->index()->unique();
             $table->integer('total_sub_categories')->default(0);
             $table->integer('total_articles')->default(0);
             $table->timestamps();

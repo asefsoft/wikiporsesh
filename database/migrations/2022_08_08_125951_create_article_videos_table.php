@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('article_id');
             $table->string('poster_url', 255);
+            $table->string('video_url', 255);
             $table->string('title_fa', 150)->nullable();
             $table->string('title_en', 150);
             $table->string('content_fa', 255)->nullable();

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Article;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('dashboard');
+});
+
+Route::get('/test', function () {
+//    Article::factory()->make();
+    $seeder = new \Database\Seeders\DatabaseSeeder();
+    $seeder->run();
 });
 
 Route::middleware([
