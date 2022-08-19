@@ -1,5 +1,7 @@
 <?php
 
+use App\Crawl\MyCrawler;
+use App\Jobs\ProcessCrawledUrl;
 use App\Models\Article;
 use Illuminate\Support\Facades\Route;
 
@@ -19,9 +21,21 @@ Route::get('/', function () {
 });
 
 Route::get('/test', function () {
-//    Article::factory()->make();
-    $seeder = new \Database\Seeders\DatabaseSeeder();
-    $seeder->run();
+    //$url = \App\Models\Url::whereId(69)->first()->getFullUrl();
+    //$validator = new \App\Article\Url\WikiHowArticleUrl();
+    //$validator->isIgnoredPath(new \GuzzleHttp\Psr7\Uri($url));
+
+    //MyCrawler::doCrawl("https://www.wikihow.com/Main-Page");
+//exit;
+    for ($i=150 ; $i<=400; $i++) {
+        $url = \App\Models\Url::whereId($i)->first();
+        dump('--- ' . $url->id);
+        ProcessCrawledUrl::dispatch($url);
+    }
+
+    //    Article::factory()->make();
+//    $seeder = new \Database\Seeders\DatabaseSeeder();
+//    $seeder->run();
 });
 
 Route::middleware([

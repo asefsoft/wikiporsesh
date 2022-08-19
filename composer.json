@@ -6,12 +6,17 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "brick/structured-data": "^0.1.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/jetstream": "^2.10",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",
+        "ml/json-ld": "^1.2",
+        "spatie/crawler": "^7.1",
+        "symfony/css-selector": "^6.0",
+        "symfony/dom-crawler": "^6.0",
         "wireui/wireui": "^1.13"
     },
     "require-dev": {
@@ -30,7 +35,8 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": ["app/Tools/helpers.php"]
     },
     "autoload-dev": {
         "psr-4": {

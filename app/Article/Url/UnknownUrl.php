@@ -11,7 +11,7 @@ class UnknownUrl extends ArticleUrl
 {
     protected string $name = 'Unknown';
 
-    function getCleanedUrl(string $url) : string {
+    function getCleanedUrl(UriInterface $url) : UriInterface {
         return $url;
     }
 
@@ -35,7 +35,15 @@ class UnknownUrl extends ArticleUrl
         return false;
     }
 
-    function getUrlUniqueID(string $url) : string {
+    function getUrlUniqueID(UriInterface $url) : UriInterface {
+        return false;
+    }
+
+    function isIgnoredPath(UriInterface $url) : bool {
+        return false;
+    }
+
+    function isCategoryUrl(UriInterface $url) : bool {
         return false;
     }
 }

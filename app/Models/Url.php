@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Article\Factory\ArticleUrlFactory;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,83 +32,80 @@ class Url extends Model
         return $this->hasOne(Content::class);
     }
 
-    public static function getUrlHash($url, $extra_param=''): string {
-        $url = VideoUrlFactory::get_cleaned_url($url);
+    public static function getUrlHash($url, $extraParam=''): string {
+        $url = ArticleUrlFactory::getCleanedUrl($url);
         $url = parse_url($url);
 
         $str_id = sprintf("%s%s%s",
             $url['host'],
             $url['path'] ?? '',
-            $extra_param);
+            $extraParam);
 
         return hash('sha256', $str_id);
     }
 
-    public static function isUrlCrawled($url, $extra_param='', $should_has_video = false, &$video = null): bool {
-        $hash = static::getUrlHash($url, $extra_param);
-        $url_db = \App\Url::where('always_crawl', '=', 0)->where('hash', $hash)->first();
+    public static function isUrlCrawled($url, $extraParam='', $shouldHasArticle = false, &$article = null): bool {
+        $hash = static::getUrlHash($url, $extraParam);
+        $urlDb = Url::where('hash', $hash)->first();
 
         // no url found
-        if(!$url_db instanceof Url)
+        if(!$urlDb instanceof Url)
             return false;
 
         // if we should check existences of video (url belong to video)
-        if($should_has_video) {
-            $video = $url_db->video;
-            return $video instanceof VideoInfo;
+        if($shouldHasArticle) {
+            $article = $urlDb->articles?->first();
+            return $article instanceof Article;
         }
 
         return true;
     }
 
-    public static function saveNewUrl($url, $content = '', $extra_param='') {
+    public static function saveNewUrl($url, $content = '', $extraParam = '') {
         if(! $url instanceof UriInterface)
             $url = new Uri($url);
 
-        $hash = Url::getUrlHash($url, $extra_param);
+        $hash = Url::getUrlHash($url, $extraParam);
 
-        $cr_url = Url::firstOrNew(['hash'=>$hash]);
-        $cr_url->hash = $hash;
-        $cr_url->hostname = Str::limit($url->getHost(),50,'');
-        $cr_url->path = Str::limit($url->getPath(),800,'');
-        $cr_url->query = Str::limit($url->getQuery(),400,'');
-        $cr_url->date = now();
-        $cr_url->useful = true;
-        $cr_url->is_crawled = true;
-        $url_was_exist = $cr_url->exists;
-        if (!$url_was_exist) {
-            $cr_url->total_crawled = 0;
-            $cr_url->always_crawl = false;
+        $curUrl = Url::firstOrNew(['hash'=>$hash]);
+        $curUrl->hash = $hash;
+        $curUrl->hostname = Str::limit($url->getHost(),50,'');
+        $curUrl->path = Str::limit($url->getPath(),800,'');
+        $curUrl->query = Str::limit($url->getQuery(),200,'');
+        $curUrl->date = now();
+        $urlWasExist = $curUrl->exists;
+
+        if (! $urlWasExist) {
+            $curUrl->total_crawled = 0;
         }
         else
-            $cr_url->total_crawled++; // new crawl then update counter
+            $curUrl->total_crawled++; // new crawl then update counter
 
         // save html content
-        if($content!='') {
-            if (!$url_was_exist)
-                $cr_url->save();
+        if($content != '') {
+            if (! $urlWasExist)
+                $curUrl->save();
 
-            $cr_url->content()->updateOrCreate([], [
+            $curUrl->content()->updateOrCreate([], [
                 'date' => now(),
                 'content' => $content
             ]);
         }
 
-        $cr_url->save();
+        $curUrl->save();
 
-        return $cr_url;
+        return $curUrl;
     }
 
-    public static function getByUrl($url, $extra_param='') {
-        return static::where('hash', static::getUrlHash($url, $extra_param))->first();
+    public static function getByUrl($url, $extraParam = '') {
+        return static::where('hash', static::getUrlHash($url, $extraParam))->first();
     }
 
-    public function getFullUrl($secure = true)
-    {
+    public function getFullUrl($secure = true) : string {
         $query = !empty($this->query) ? "?" . $this->query : "";
 
-        if(!Str::endsWith($this->path, '/'))
-            $this->path = $this->path . "/";
+        //if(!Str::endsWith($this->path, '/'))
+        //    $this->path = $this->path . "/";
 
         // remove multiple slashes
         $this->path = preg_replace('~/+~', '/', $this->path);

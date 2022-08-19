@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('title_en', 150);
             $table->string('content_fa', 255)->nullable();
             $table->string('content_en', 255);
+            $table->boolean('assets_local')->default(0);
             $table->boolean('enable')->default(1);
             $table->integer('views')->default(0);
             $table->timestamps();

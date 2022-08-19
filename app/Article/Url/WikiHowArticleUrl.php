@@ -10,33 +10,57 @@ use Psr\Http\Message\UriInterface;
 
 class WikiHowArticleUrl extends ArticleUrl
 {
-    protected string $name = 'Youtube';
+    protected string $name = 'WikiHow';
 
     protected array $validHosts = [
-        'youtube.com',
-        'www.youtube.com',
-        'm.youtube.com',
-        'youtu.be',
-        'www.youtu.be',
+        'wikihow.com',
+        'www.wikihow.com',
     ];
 
-    protected $short_video_urls = ['youtu.be'];
+    protected array $ignoredPaths = [
+        '/Course/*',
+        '/Experts/*',
+        '/wikiHow:*',
+        '/*-Quiz',
+        '/Quizzes',
+        '/Pro',
+        '/Experts',
+        '/Newsletters',
+        '/Tech-Help-Pro',
+        '/Randomizer',
+    ];
 
-    protected $sub_urls = [''];
+
+    protected string $ignoredPathPattern = '';
+
+    public function __construct() {
+        $grouped_patterns = [];
+        foreach ($this->ignoredPaths as $pattern) {
+            $grouped_patterns[] = "(" . str_replace("*",".*", $pattern) . ")";
+        }
+
+        $this->ignoredPathPattern = implode("|", $grouped_patterns);
+    }
+
 
     public function isValidArticleUrl(UriInterface $url): bool {
-//        dd($url->getHost());
-        return $this->isValidArticleSite($url) && ($this->is_full_yt_url($url) || $this->is_short_yt_url($url));
+        return $this->isValidArticleSite($url) &&
+               ! $this->hasColon($url) &&
+               ! str_contains(substr($url->getPath(), 1), "/") &&
+               ! $this->isMainUrl($url);
     }
 
-    private function is_full_yt_url(UriInterface $url): bool {
-        return Str::startsWith($url->getPath(), "/watch") &&
-            Str::contains($url->getQuery(),'v=');
+    private function hasColon(UriInterface $url) : bool {
+        return str_contains($url->getPath(), ":");
     }
 
-    private function is_short_yt_url(UriInterface $url): bool {
-        return Str::is($this->short_video_urls, $url->getHost()) &&
-            preg_match('/[a-z0-9_-]{11}/i', $url->getPath(), $matches) == 1;
+    // get wiki how section from it's url
+    private function getSection(UriInterface $url): bool | string {
+        if($this->hasColon($url)) {
+            $parts = explode(":", $url->getPath());
+            return $parts[0];
+        }
+        return false;
     }
 
 
@@ -46,38 +70,50 @@ class WikiHowArticleUrl extends ArticleUrl
 
     function isMainUrl(UriInterface $url): bool  {
         return $this->isValidArticleSite($url) &&
-               in_array($url->getPath(),['','/']);
+               in_array($url->getPath(),['','/','/Main-Page']);
     }
 
     public function isValidArticleSubUrl(UriInterface $url): bool {
-        return Str::startsWith($url->getPath(), $this->sub_urls);
+        return Str::startsWith($url->getPath(), $this->subUrls);
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string {
         return $this->name;
     }
 
-    public function extractVideoId($str)
+    public function extractArticleId(UriInterface $url)
     {
-        if (preg_match('/[a-z0-9_-]{11}/i', $str, $matches)) {
-            return $matches[0];
-        }
 
-        return false;
+        if(str($url->getPath())->startsWith("/"))
+            return str($url->getPath())->substr(1);
+
+
+        return $url->getPath();
     }
 
-    function getCleanedUrl(string $url) : string {
-        if($this->isValidArticleUrl( new Uri($url))) {
-            $video_id = $this->extractVideoId($url);
-            $url = sprintf("https://www.youtube.com/watch?v=%s", $video_id);
+    function getCleanedUrl(UriInterface $url) : UriInterface {
+        if($this->isValidArticleUrl($url)) {
+            $id = $this->extractArticleId($url);
+            $url = sprintf("https://www.wikihow.com/%s", $id);
+            return new Uri($url);
         }
+
+        return $url->withQuery('');
+    }
+
+    function getUrlUniqueID(UriInterface $url): UriInterface {
         return $url;
     }
 
-    function getUrlUniqueID(string $url): string {
-        return $url;
+    function isIgnoredPath(UriInterface $url) : bool {
+        $path = $url->getPath();
+        $founds = preg_match("~" . $this->ignoredPathPattern . "~", $path, $matches);
+
+        return $founds > 0;
+    }
+
+    function isCategoryUrl(UriInterface $url) : bool {
+        return str_starts_with($url->getPath(), "/Category:");
+
     }
 }

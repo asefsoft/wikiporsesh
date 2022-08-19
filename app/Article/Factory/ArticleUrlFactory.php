@@ -8,6 +8,7 @@ use App\Article\Url\ArticleUrl;
 use App\Article\Url\UnknownUrl;
 use App\Article\Url\WikiHowArticleUrl;
 use GuzzleHttp\Psr7\Uri;
+use Psr\Http\Message\UriInterface;
 
 class ArticleUrlFactory
 {
@@ -26,9 +27,9 @@ class ArticleUrlFactory
         return new UnknownUrl();
     }
 
-    public static function getCleanedUrl($url) {
-        $video_url = static::make($url);
+    public static function getCleanedUrl($url) : UriInterface {
+        $articleUrl = static::make($url);
 
-        return $video_url->getCleanedUrl($url);
+        return $articleUrl->getCleanedUrl($url);
     }
 }
