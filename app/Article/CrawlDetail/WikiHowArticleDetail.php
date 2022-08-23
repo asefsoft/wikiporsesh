@@ -3,6 +3,7 @@
 
 namespace App\Article\CrawlDetail;
 
+use App\Article\Category\CategoryManager;
 use App\Models\Url;
 use App\StructuredData\PageStructuredData;
 use Brick\StructuredData\Item;
@@ -96,7 +97,8 @@ class WikiHowArticleDetail extends ArticleDetail
 
         if($this->hasLdJsonData()) {
             $this->pageStructuredData = new PageStructuredData($this->ldJsonData, $this);
-            echo implode("\n", $this->pageStructuredData->getBreadCrumbs()), PHP_EOL, PHP_EOL;
+            CategoryManager::addCategories($this->pageStructuredData->getBreadCrumbs());
+            echo implode("\n", $this->pageStructuredData->getBreadCrumbs(true)), PHP_EOL, PHP_EOL;
             echo "Article Type: ", $this->pageStructuredData->getArticleInstructionType(), PHP_EOL;
 
             echo "Steps DOM Videos: ", count($this->stepsVideos ?? []) , PHP_EOL;

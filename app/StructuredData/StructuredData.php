@@ -14,7 +14,6 @@ abstract class StructuredData {
     protected int $totalOverallSteps = 0;
     protected int $totalCurrentSectionSteps = 0;
 
-
     public object $structuredData;
 
     public function __construct(object $structuredData, ?ArticleDetail $articleDetail = null, ?StructuredData $parent = null) {

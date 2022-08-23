@@ -20,7 +20,6 @@ return new class extends Migration
 
             $table->foreign('article_id')->references('id')->on('articles');
             $table->foreign('category_id')->references('id')->on('categories');
-            $table->unique(["article_id","category_id"]);
         });
     }
 

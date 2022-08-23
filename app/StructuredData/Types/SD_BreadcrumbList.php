@@ -24,7 +24,7 @@ class SD_BreadcrumbList extends StructuredData {
         }
 
         if(count($this->items) > 1) {
-            array_pop($this->items);
+            (array_pop($this->items));
         }
 
         $this->totalItems = count($this->items);
@@ -47,5 +47,12 @@ class SD_BreadcrumbList extends StructuredData {
 
     public function getReadableText() : string {
         return $this->readableText;
+    }
+
+    /**
+     * @return array
+     */
+    public function getItems(): array {
+        return $this->items;
     }
 }

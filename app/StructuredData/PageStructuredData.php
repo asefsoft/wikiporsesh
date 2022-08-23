@@ -67,11 +67,14 @@ class PageStructuredData {
             $this->totalInvalidItems++;
     }
 
-    public function getBreadCrumbs() : array {
+    public function getBreadCrumbs($asText = false) : array {
         $list = [];
         foreach ($this->structuredDataProcessed as $dataObjectProcessed) {
             if($dataObjectProcessed instanceof SD_BreadcrumbList)
-                $list[] = $dataObjectProcessed->getReadableText();
+                if($asText)
+                    $list[] = $dataObjectProcessed->getReadableText();
+                else
+                    $list[] = $dataObjectProcessed->getItems();
         }
         return $list;
     }

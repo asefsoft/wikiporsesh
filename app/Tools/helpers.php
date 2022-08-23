@@ -101,3 +101,7 @@ function unescape_unicode($string) {
     return json_decode('"'.$string.'"', JSON_UNESCAPED_SLASHES);
 }
 
+function logException($exception, $methodName, $extra = ''){
+    Log::warning(sprintf("Error on %s, %s, %s", $methodName, $extra, $exception->getMessage()));
+}
+
