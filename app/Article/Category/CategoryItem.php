@@ -72,9 +72,10 @@ class CategoryItem
                 ]
             );
 
-            // re get data from db and update class properties
+            // re-get data from db and update class properties
             $this->fetchCategoryData();
             return true;
+
         } catch (\Exception $e) {
             logException($e, "Category:makeItExist");
             return false;

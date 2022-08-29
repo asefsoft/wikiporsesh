@@ -33,7 +33,7 @@ class WikiHowArticleUrl extends ArticleUrl
 
     protected string $ignoredPathPattern = '';
 
-    public function __construct() {
+    protected function init() {
         $grouped_patterns = [];
         foreach ($this->ignoredPaths as $pattern) {
             $grouped_patterns[] = "(" . str_replace("*",".*", $pattern) . ")";
@@ -43,77 +43,80 @@ class WikiHowArticleUrl extends ArticleUrl
     }
 
 
-    public function isValidArticleUrl(UriInterface $url): bool {
-        return $this->isValidArticleSite($url) &&
-               ! $this->hasColon($url) &&
-               ! str_contains(substr($url->getPath(), 1), "/") &&
-               ! $this->isMainUrl($url);
+    public function isValidArticleUrl(): bool {
+        return $this->isValidArticleSite() &&
+               ! $this->hasColon() &&
+               ! str_contains(substr($this->url->getPath(), 1), "/") &&
+               ! $this->isMainUrl();
     }
 
-    private function hasColon(UriInterface $url) : bool {
-        return str_contains($url->getPath(), ":");
+    private function hasColon() : bool {
+        return str_contains($this->url->getPath(), ":");
     }
 
     // get wiki how section from it's url
-    private function getSection(UriInterface $url): bool | string {
-        if($this->hasColon($url)) {
-            $parts = explode(":", $url->getPath());
+    private function getSection(): bool | string {
+        if($this->hasColon()) {
+            $parts = explode(":", $this->url->getPath());
             return $parts[0];
         }
         return false;
     }
 
 
-    function isValidArticleSite(UriInterface $url): bool {
-        return Str::is($this->validHosts, $url->getHost());
+    function isValidArticleSite(): bool {
+        return Str::is($this->validHosts, $this->url->getHost());
     }
 
-    function isMainUrl(UriInterface $url): bool  {
-        return $this->isValidArticleSite($url) &&
-               in_array($url->getPath(),['','/','/Main-Page']);
+    function isMainUrl(): bool  {
+        return $this->isValidArticleSite() &&
+               in_array($this->url->getPath(),['','/','/Main-Page']);
     }
 
-    public function isValidArticleSubUrl(UriInterface $url): bool {
-        return Str::startsWith($url->getPath(), $this->subUrls);
+    public function isValidArticleSubUrl(): bool {
+        return Str::startsWith($this->url->getPath(), $this->subUrls);
     }
 
     public function getName(): string {
         return $this->name;
     }
 
-    public function extractArticleId(UriInterface $url)
+    public function extractArticleId()
     {
+        if(str($this->url->getPath())->startsWith("/"))
+            return str($this->url->getPath())->substr(1);
 
-        if(str($url->getPath())->startsWith("/"))
-            return str($url->getPath())->substr(1);
 
-
-        return $url->getPath();
+        return $this->url->getPath();
     }
 
-    function getCleanedUrl(UriInterface $url) : UriInterface {
-        if($this->isValidArticleUrl($url)) {
-            $id = $this->extractArticleId($url);
+    function getCleanedUrl() : UriInterface {
+        if($this->isValidArticleUrl()) {
+            $id = $this->extractArticleId();
             $url = sprintf("https://www.wikihow.com/%s", $id);
             return new Uri($url);
         }
 
-        return $url->withQuery('');
+        return $this->url->withQuery('');
     }
 
-    function getUrlUniqueID(UriInterface $url): UriInterface {
-        return $url;
+    function getUrlUniqueID(): UriInterface {
+        return $this->url;
     }
 
-    function isIgnoredPath(UriInterface $url) : bool {
-        $path = $url->getPath();
+    function isIgnoredPath() : bool {
+        $path = $this->url->getPath();
         $founds = preg_match("~" . $this->ignoredPathPattern . "~", $path, $matches);
 
         return $founds > 0;
     }
 
-    function isCategoryUrl(UriInterface $url) : bool {
-        return str_starts_with($url->getPath(), "/Category:");
+    function isCategoryUrl() : bool {
+        return str_starts_with($this->url->getPath(), "/Category:");
 
+    }
+
+    function getSlug() : string {
+        return str_replace('/', '', $this->url->getPath());
     }
 }

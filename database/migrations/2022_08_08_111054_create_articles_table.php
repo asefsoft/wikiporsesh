@@ -20,13 +20,13 @@ return new class extends Migration
             $table->unsignedBigInteger('url_id');
             $table->string('slug', 150)->index();
             $table->tinyInteger('total_sections');
+            $table->tinyInteger('total_steps');
             $table->string('title_fa',300)->nullable();
             $table->string('title_en',300);
             $table->string('tips_fa',500)->nullable();
             $table->string('tips_en',500)->nullable();
             $table->string('warnings_en',500)->nullable();
             $table->string('warnings_fa',500)->nullable();
-            $table->boolean('has_steps');
             $table->string('steps_type', 30);
             $table->integer('views')->default(0);
             $table->integer('likes')->default(0);
@@ -36,6 +36,7 @@ return new class extends Migration
             $table->boolean('is_featured')->default(0);
             $table->boolean('is_translated')->default(0);
             $table->timestamp('edited_at')->nullable();
+            $table->timestamp('last_crawled_at')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
 

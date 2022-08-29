@@ -17,11 +17,11 @@ class CategoryChain
         $this->processChainArray();
     }
 
-    public function getRootElement() : string|null {
+    public function getRootName() : string|null {
         return $this->chainArray[0] ?? null;
     }
 
-    public function getLastElement() : string|null {
+    public function getLastChildName() : string|null {
         return end($this->chainArray) ?? null;
     }
 
@@ -52,6 +52,10 @@ class CategoryChain
         foreach ($this->processedChainArray as $categoryItem){
             $categoryItem->makeItExist();
         }
+    }
+
+    public function getLastChild() : CategoryItem {
+        return end($this->processedChainArray);
     }
 
 }

@@ -24,12 +24,16 @@ class Url extends Model
     ];
 
     // it maybe better to be has-one relation
-    public function articles() : Relation {
-        return $this->hasMany(Article::class);
+    public function article() : Relation {
+        return $this->hasOne(Article::class);
     }
 
     public function content() : Relation {
         return $this->hasOne(Content::class);
+    }
+
+    public function hasArticle() : bool {
+        return $this->article()->exists();
     }
 
     public static function getUrlHash($url, $extraParam=''): string {

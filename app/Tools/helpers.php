@@ -102,6 +102,42 @@ function unescape_unicode($string) {
 }
 
 function logException($exception, $methodName, $extra = ''){
-    Log::warning(sprintf("Error on %s, %s, %s", $methodName, $extra, $exception->getMessage()));
+    logError(sprintf("Error on %s, %s, %s", $methodName, $extra, $exception->getMessage()));
+}
+
+function logError($error, $level = 'warning'){
+    Log::log($level,$error);
+}
+
+function strLimit($text, $limit = 100, $end = '...') {
+    return Str::limit($text, $limit, $end);
+}
+
+function loadTime() {
+    $load_time = getTook();
+    echo sprintf("<took style='display: none'>%.2f sec</took>\n<query style='display: none'>%s ms, count: %s, slow: %s</query>", $load_time,
+        number_format($GLOBALS['STAT_QUERY_TIME'] ?? -1),
+        number_format($GLOBALS['STAT_QUERY_COUNT'] ?? -1),
+        number_format($GLOBALS['STAT_QUERY_COUNT_SLOW'] ?? -1)
+    );
+
+    // slow?
+    if($load_time >= 2) {
+        $user = auth()->check() ? 'user: ' . auth()->user()->name . ', ' : '';
+
+        $q = sprintf("Slow Page Load, time: %.2f sec, %s%s\nSLOW_QUERY_COUNT: %s\nQUERY_TIME: %s ms.\n",
+            $load_time,
+            $user,
+            rawurldecode(request()->fullUrl()),
+            $GLOBALS['STAT_QUERY_COUNT_SLOW'] ?? -1,
+            $GLOBALS['STAT_QUERY_TIME'] ?? -1
+        );
+
+        Log::warning($q);
+    }
+}
+
+function getTook() : float {
+    return microtime(true) - LARAVEL_START;
 }
 

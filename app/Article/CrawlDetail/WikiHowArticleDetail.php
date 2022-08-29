@@ -4,6 +4,7 @@
 namespace App\Article\CrawlDetail;
 
 use App\Article\Category\CategoryManager;
+use App\Models\Article;
 use App\Models\Url;
 use App\StructuredData\PageStructuredData;
 use Brick\StructuredData\Item;
@@ -97,7 +98,12 @@ class WikiHowArticleDetail extends ArticleDetail
 
         if($this->hasLdJsonData()) {
             $this->pageStructuredData = new PageStructuredData($this->ldJsonData, $this);
-            CategoryManager::addCategories($this->pageStructuredData->getBreadCrumbs());
+
+            $this->articleSections = $this->pageStructuredData->getAllSections();
+            $this->articleSteps = $this->pageStructuredData->getAllSteps();
+
+            //CategoryManager::addCategoriesToArticle($this->pageStructuredData->getBreadCrumbs(), Article::first());
+            echo "Ready To Save: ", $this->pageStructuredData->hasEnoughStepsAndSections() ? "YES" : "NO!", PHP_EOL, PHP_EOL;
             echo implode("\n", $this->pageStructuredData->getBreadCrumbs(true)), PHP_EOL, PHP_EOL;
             echo "Article Type: ", $this->pageStructuredData->getArticleInstructionType(), PHP_EOL;
 
@@ -137,11 +143,9 @@ class WikiHowArticleDetail extends ArticleDetail
                         foreach ($properties as $key => $property) {
                             $value .= sprintf("\t%s: %s\n", $key, json_encode($property, JSON_UNESCAPED_SLASHES));
                         }
-
                     }
 
                     // If $value is not an Item, then it's a plain string
-
                     echo "  - $name: $value", PHP_EOL;
                 }
             }
@@ -156,4 +160,8 @@ class WikiHowArticleDetail extends ArticleDetail
     }
 
 
+    public function isReadyToBeSaved() : bool {
+        return ($this->pageStructuredData?->hasEnoughStepsAndSections() ?? false) &&
+               ($this->pageStructuredData?->hasArticle() ?? false);
+    }
 }

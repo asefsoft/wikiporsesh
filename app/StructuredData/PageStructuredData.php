@@ -4,6 +4,7 @@ namespace App\StructuredData;
 
 use App\Article\CrawlDetail\ArticleDetail;
 use App\Article\Factory\StructuredDataFactory;
+use App\StructuredData\Concreats\HasSection;
 use App\StructuredData\Concreats\HasStep;
 use App\StructuredData\Concreats\HasVideo;
 use App\StructuredData\Types\SD_Article;
@@ -26,6 +27,9 @@ class PageStructuredData {
     protected bool $hasVideoObject = false;
     protected bool $hasHowTo = false;
     protected bool $hasRecipe = false;
+    protected array $allSections = [];
+    protected array $allSteps = [];
+
     private ?ArticleDetail $articleDetail;
 
     public function __construct(Collection $structuredData, ArticleDetail $articleDetail = null) {
@@ -52,8 +56,9 @@ class PageStructuredData {
                 $dataObjectProcessed = StructuredDataFactory::make($structuredDataObject, $this->articleDetail);
                 $this->addProcessedDataObject($dataObjectProcessed);
             }
-
         }
+
+        $this->finalProcess();
     }
 
     private function addProcessedDataObject($dataObjectProcessed) {
@@ -67,6 +72,12 @@ class PageStructuredData {
             $this->totalInvalidItems++;
     }
 
+    // process counts like total sections and total steps
+    private function finalProcess() {
+        $this->allSections = $this->getAllSections();
+        $this->allSteps = $this->getAllSteps();
+    }
+
     public function getBreadCrumbs($asText = false) : array {
         $list = [];
         foreach ($this->structuredDataProcessed as $dataObjectProcessed) {
@@ -75,6 +86,17 @@ class PageStructuredData {
                     $list[] = $dataObjectProcessed->getReadableText();
                 else
                     $list[] = $dataObjectProcessed->getItems();
+        }
+        return $list;
+    }
+
+    public function getAllSections() : array {
+        $list = [];
+        foreach ($this->structuredDataProcessed as $dataObjectProcessed) {
+            if($dataObjectProcessed instanceof HasSection) {
+                $list = array_merge($list, $dataObjectProcessed->getSections());
+            }
+
         }
         return $list;
     }
@@ -90,6 +112,7 @@ class PageStructuredData {
         return $list;
     }
 
+
     public function getTotalVideos() : int {
         $total = 0;
         foreach ($this->structuredDataProcessed as $dataObjectProcessed) {
@@ -101,7 +124,8 @@ class PageStructuredData {
         return $total;
     }
 
-    private function checkSDType($dataObjectProcessed) {
+    // which structured-data are available?
+    private function checkSDType(StructuredData $dataObjectProcessed) {
         if($dataObjectProcessed     instanceof SD_BreadcrumbList)
             $this->hasBreadcrumb = true;
         elseif($dataObjectProcessed instanceof SD_Article)
@@ -157,6 +181,9 @@ class PageStructuredData {
         return $this->totalInvalidItems;
     }
 
+    public function hasEnoughStepsAndSections() : bool {
+        return count($this->allSteps) > 0 && count($this->allSections) > 0;
+    }
 
 
 

@@ -17,19 +17,19 @@ class ArticleUrlFactory
         $url = new Uri($url);
 
         // WikiPorsesh
-        $wikiPorsesh = new WikiHowArticleUrl();
-        if($wikiPorsesh->isValidArticleSite($url)) {
+        $wikiPorsesh = new WikiHowArticleUrl($url);
+        if($wikiPorsesh->isValidArticleSite()) {
             return $wikiPorsesh;
         }
         unset($wikiPorsesh);
 
         // no valid
-        return new UnknownUrl();
+        return new UnknownUrl($url);
     }
 
     public static function getCleanedUrl($url) : UriInterface {
         $articleUrl = static::make($url);
 
-        return $articleUrl->getCleanedUrl($url);
+        return $articleUrl->getCleanedUrl();
     }
 }

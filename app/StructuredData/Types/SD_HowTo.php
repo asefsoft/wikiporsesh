@@ -3,11 +3,12 @@
 namespace App\StructuredData\Types;
 
 use App\Article\Factory\StructuredDataFactory;
+use App\StructuredData\Concreats\HasSection;
 use App\StructuredData\Concreats\HasStep;
 use App\StructuredData\Concreats\HasVideo;
 use App\StructuredData\StructuredData;
 
-class SD_HowTo extends StructuredData implements HasStep, HasVideo {
+class SD_HowTo extends StructuredData implements HasStep, HasVideo, HasSection {
 
     public string $name = '';
     public string $datePublished = '';
@@ -65,5 +66,9 @@ class SD_HowTo extends StructuredData implements HasStep, HasVideo {
 
     public function getTotalVideos() : int {
         return $this->totalVideos;
+    }
+
+    public function getSections() : array {
+        return $this->sections;
     }
 }

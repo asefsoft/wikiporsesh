@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
@@ -17,7 +18,8 @@ class Article extends Model
 
     public $dates = [
         'edited_at',
-        'published_at'
+        'published_at',
+        'last_crawled_at'
     ];
 
     public function sections() : Relation {
@@ -40,7 +42,7 @@ class Article extends Model
         return $this->belongsTo(Url::class);
     }
 
-    public function categories() : Relation {
+    public function categories() : BelongsToMany {
         return $this->belongsToMany(Category::class,
             'article_categories', 'article_id', 'category_id'
         );

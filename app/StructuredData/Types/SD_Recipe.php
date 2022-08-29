@@ -3,12 +3,13 @@
 namespace App\StructuredData\Types;
 
 use App\Article\Factory\StructuredDataFactory;
+use App\StructuredData\Concreats\HasSection;
 use App\StructuredData\Concreats\HasStep;
 use App\StructuredData\Concreats\HasVideo;
 use App\StructuredData\StructuredData;
 use Symfony\Component\DomCrawler\Crawler;
 
-class SD_Recipe extends StructuredData implements HasStep, HasVideo {
+class SD_Recipe extends StructuredData implements HasStep, HasVideo, HasSection {
 
     public string $name = '';
     public string $datePublished = '';
@@ -114,5 +115,9 @@ class SD_Recipe extends StructuredData implements HasStep, HasVideo {
             $a=1;
 
         return $image;
+    }
+
+    public function getSections() : array {
+        return $this->domInstructions;
     }
 }

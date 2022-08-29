@@ -50,8 +50,7 @@ class Observer extends MyCrawlObserver {
         Observer::$count ++;
 
         // emit the 'url crawled' event
-        if ($urlValidator->isValidArticleUrl(new Uri($crawledUrlDB->getFullUrl()))) {
-
+        if ($urlValidator->isValidArticleUrl()) {
             //event(new UrlCrawled($cr_url,$crawler,false,true,false,"Crawler"));
             ProcessCrawledUrl::dispatch($crawledUrlDB);
         }

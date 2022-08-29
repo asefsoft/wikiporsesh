@@ -62,5 +62,8 @@
         @stack('modals')
 
         @livewireScripts
+
+        <?php loadTime() ?>
+
     </body>
 </html>

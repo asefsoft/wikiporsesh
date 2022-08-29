@@ -37,11 +37,11 @@ class Filter_Crawl extends CrawlProfile {
         Filter_Crawl::$totalCount++;
 
         $validator = ArticleUrlFactory::make($url);
-        $isValidSubUrl = $validator->isValidArticleSubUrl($url);
-        $isValidArticleUrl = $validator->isValidArticleUrl($url);
-        $isMainPageUrl = $validator->isMainUrl($url);
-        $isUrlIgnored = $validator->isIgnoredPath($url);
-        $isCategoryUrl = $validator->isCategoryUrl($url);
+        $isValidSubUrl = $validator->isValidArticleSubUrl();
+        $isValidArticleUrl = $validator->isValidArticleUrl();
+        $isMainPageUrl = $validator->isMainUrl();
+        $isUrlIgnored = $validator->isIgnoredPath();
+        $isCategoryUrl = $validator->isCategoryUrl();
 
         $video = null;
 

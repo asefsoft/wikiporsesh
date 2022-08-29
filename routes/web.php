@@ -47,3 +47,37 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
+
+DB::listen(function ($query) {
+    if(isset($GLOBALS['STAT_QUERY_COUNT']) && isset($GLOBALS['STAT_QUERY_TIME'])) {
+        $GLOBALS['STAT_QUERY_COUNT'] ++;
+        $GLOBALS['STAT_QUERY_TIME'] += $query->time;
+    }
+    else {
+        $GLOBALS['STAT_QUERY_COUNT'] = 0;
+        $GLOBALS['STAT_QUERY_TIME'] = 0;
+    }
+
+    if ($GLOBALS['auth_checking'] ?? false) {
+        return;
+    }
+
+    if (request()->has('log_queries') || $query->time > 1500) {
+
+        $GLOBALS['auth_checking'] = true;
+        $user                     = auth()->check() ? 'user: ' . auth()->user()->name . ', ' : '';
+        //todo add this
+        $bot_name                 = "";//Tools::is_bot() ? sprintf("Bot: %s ", Tools::user_agent()) : '';
+        $GLOBALS['auth_checking'] = false;
+        $GLOBALS['STAT_QUERY_COUNT_SLOW'] ++;
+
+        $total_binding = count($query->bindings) > 10 ? sprintf("total bindings: %s\n",
+            count($query->bindings)) : '';
+
+        $q = sprintf("Slow Query: %s%s%s\n%s%s --- %s \n--- time: %s ms", $bot_name, $user,
+            rawurldecode(request()->fullUrl()), $total_binding, strLimit($query->sql, 300),
+            strLimit(print_r(array_slice($query->bindings, 0, 30), true), 300), $query->time);
+
+        Log::warning($q);
+    }
+});
