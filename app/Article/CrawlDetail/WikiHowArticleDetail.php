@@ -58,8 +58,7 @@ class WikiHowArticleDetail extends ArticleDetail
                     $stepID = $stepIDItem?->attr('id');
                     $stepText = $stepIDItem?->filter('.step')->text();
                     //remove [8] reference texts
-                    $stepText = preg_replace("~\[[0-9]*]~", '', $stepText, -1);
-                    $stepText = str_replace(" X Research source", '', $stepText);
+                    $stepText = $this->stripExtraWords($stepText);
 
                     $videosData[] = [
                         'id' =>  $stepID,
@@ -101,6 +100,11 @@ class WikiHowArticleDetail extends ArticleDetail
 
             $this->articleSections = $this->pageStructuredData->getAllSections();
             $this->articleSteps = $this->pageStructuredData->getAllSteps();
+            $this->articleTitle = $this->pageStructuredData->getArticle()?->name ?? '';
+            $this->articleDescription = $this->pageStructuredData->getArticle()?->description ?? '';
+            $this->articleImageUrl = $this->pageStructuredData->getArticle()?->image?->url ?? '';
+
+            $this->extractTipsAndWarnings();
 
             //CategoryManager::addCategoriesToArticle($this->pageStructuredData->getBreadCrumbs(), Article::first());
             echo "Ready To Save: ", $this->pageStructuredData->hasEnoughStepsAndSections() ? "YES" : "NO!", PHP_EOL, PHP_EOL;
@@ -154,6 +158,32 @@ class WikiHowArticleDetail extends ArticleDetail
 
     }
 
+    private function extractTipsAndWarnings(){
+        $this->articleTips = $this->extractByType('tips');
+        $this->articleWarnings = $this->extractByType('warnings');
+    }
+
+    private function extractByType($cssId) : string {
+        $nodes = $this->domCrawler->filter('#' . $cssId);
+        $text = [];
+
+        if ($nodes->count()) { // find li s
+            $items = $nodes->filter('li');
+
+            if($items->count()){
+                $items->each(function ($liItem) use(&$text){
+                    $text[] = "* " . $liItem->filter('div')->text(); // all li s
+                });
+
+            }
+            else {
+                if(!str_starts_with($nodes->text(), "Submit a Tip"))
+                    $text[] = $this->stripExtraWords($nodes->text());
+            }
+        }
+
+        return implode("\n", $text);
+    }
 
     public function getLdJsonData() : ?Collection {
         return $this->ldJsonData;
@@ -163,5 +193,13 @@ class WikiHowArticleDetail extends ArticleDetail
     public function isReadyToBeSaved() : bool {
         return ($this->pageStructuredData?->hasEnoughStepsAndSections() ?? false) &&
                ($this->pageStructuredData?->hasArticle() ?? false);
+    }
+
+    private function stripExtraWords($text) : string|array {
+        $text = preg_replace("~\[[0-9]*]~", '', $text, - 1);
+        $text = preg_replace("~Thanks! Helpful \d+ Not Helpful \d+~", '', $text, - 1);
+        $text = str_replace(" X Research source", '', $text);
+
+        return $text;
     }
 }

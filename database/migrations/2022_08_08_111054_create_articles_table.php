@@ -23,6 +23,8 @@ return new class extends Migration
             $table->tinyInteger('total_steps');
             $table->string('title_fa',300)->nullable();
             $table->string('title_en',300);
+            $table->string('description_fa',300);
+            $table->string('description_en',300);
             $table->string('tips_fa',500)->nullable();
             $table->string('tips_en',500)->nullable();
             $table->string('warnings_en',500)->nullable();

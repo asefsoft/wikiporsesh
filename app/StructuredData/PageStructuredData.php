@@ -29,6 +29,7 @@ class PageStructuredData {
     protected bool $hasRecipe = false;
     protected array $allSections = [];
     protected array $allSteps = [];
+    protected ?SD_Article $article;
 
     private ?ArticleDetail $articleDetail;
 
@@ -128,14 +129,21 @@ class PageStructuredData {
     private function checkSDType(StructuredData $dataObjectProcessed) {
         if($dataObjectProcessed     instanceof SD_BreadcrumbList)
             $this->hasBreadcrumb = true;
-        elseif($dataObjectProcessed instanceof SD_Article)
+        elseif($dataObjectProcessed instanceof SD_Article) {
             $this->hasArticle = true;
+            $this->article = $dataObjectProcessed;
+        }
         elseif($dataObjectProcessed instanceof SD_VideoObject)
             $this->hasVideoObject = true;
         elseif($dataObjectProcessed instanceof SD_HowTo)
             $this->hasHowTo = true;
         elseif($dataObjectProcessed instanceof SD_Recipe)
             $this->hasRecipe = true;
+    }
+
+    public function getArticle() : ?SD_Article {
+        return $this->article;
+
     }
 
     // is HowToSteps or Recipe Steps or ...?

@@ -18,18 +18,16 @@ return new class extends Migration
             $table->unsignedBigInteger('article_id');
             $table->unsignedBigInteger('section_id');
             $table->tinyInteger('order');
-            $table->string('title_fa', 150)->nullable();
-            $table->string('title_en', 150);
+            $table->tinyInteger('overall_step_order');
             $table->text('content_fa');
             $table->text('content_en');
             $table->string('image_url')->nullable();
             $table->boolean('assets_local')->default(0);
 
-
             $table->timestamps();
 
             $table->foreign('article_id')->references('id')->on('articles');
-            $table->foreign('section_id')->references('id')->on('article_sections');
+            $table->foreign('section_id')->references('id')->on('article_sections')->cascadeOnDelete();
             $table->unique(["article_id","section_id", "order"]);
 
         });

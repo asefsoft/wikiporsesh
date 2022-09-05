@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Facade;
 
 // by asef
 $GLOBALS['STAT_QUERY_COUNT'] = 0;
+$GLOBALS['STAT_QUERIES'] = [];
 $GLOBALS['STAT_QUERY_COUNT_SLOW'] = 0;
 $GLOBALS['STAT_QUERY_TIME'] = 0;
 

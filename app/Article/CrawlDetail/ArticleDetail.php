@@ -26,6 +26,8 @@ abstract class ArticleDetail {
     protected Collection|array $articleSteps = [];
 
     protected string $articleTitle = "";
+    protected string $articleDescription = "";
+    protected string $articleImageUrl = "";
     protected string $articleCategory = "";
     protected string $articleTips = "";
     protected string $articleWarnings = "";
@@ -171,6 +173,14 @@ abstract class ArticleDetail {
 
     public function getTotalArticleSteps() : int {
         return count($this->articleSteps);
+    }
+
+    public function getArticleDescription() : string {
+        return $this->articleDescription;
+    }
+
+    public function getArticleImageUrl() : string {
+        return $this->articleImageUrl;
     }
 
     protected function addErrorMessage(string $msg) {

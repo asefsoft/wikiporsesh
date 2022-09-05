@@ -33,18 +33,33 @@ class SD_HowTo extends StructuredData implements HasStep, HasVideo, HasSection {
         $sections = $this->structuredData->step ?? [];
 
         foreach ($sections as $section) {
+
             /** @var SD_HowToSection $section */
             $section          = StructuredDataFactory::make($section, $this->articleDetail, $this);
-            $this->sections[] = $section;
 
-            if($section instanceof SD_HowToSection){
+            if($section instanceof SD_HowToSection) {
                 $this->totalVideos += $section->getTotalVideos();
+                $this->sections[] = $section;
             }
+            // if there is no section then we virtually make a section to add steps to it
             elseif($section instanceof SD_HowToStep){
-                $this->totalVideos += $section->hasVideo() ? 1 : 0;
+                $this->addToManualSection($sections);
+
+                $this->totalVideos += $this->sections[0]?->getTotalVideos();
+                break; // important to exit here
             }
 
         }
+    }
+
+    //special case for when there is just step. so we will create a manual section and add steps to it
+    private function addToManualSection($steps) {
+        $manualSection = StructuredDataFactory::makeByName('HowToSection', [
+               'name' => 'steps',
+               'itemListElement' => $steps,
+           ], $this->articleDetail, $this->parent);
+
+        $this->sections[] = $manualSection;
     }
 
     public function getSteps() : array {
