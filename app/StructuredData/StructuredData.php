@@ -24,7 +24,6 @@ abstract class StructuredData {
         $this->parent = $parent;
 
         $this->process();
-
     }
 
     abstract public function process();
@@ -38,9 +37,11 @@ abstract class StructuredData {
             // if it is Structured Data type then we try to make it
             if(is_array($propertyName) && $propertyName['type'] == 'SD_TYPE') {
                 $propertyName        = $propertyName['name'];
-                $type      = $this->structuredData->$propertyName ?? null;
-                if(!empty($type))
+                $type = $this->structuredData->$propertyName ?? null;
+
+                if (!empty($type))
                     $this->$propertyName = StructuredDataFactory::make($type, $this->articleDetail, $this);
+
                 continue;
             }
 

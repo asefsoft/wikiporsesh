@@ -43,8 +43,7 @@ class ProcessArticleDetail {
             // save article record
             if($this->createOrUpdateArticle($articleUrl)) {
                 // persist sections and steps
-                $sectionManager = new SectionManager($this->article,
-                $this->articleDetail->getArticleSections());
+                $sectionManager = new SectionManager($this->article, $this->articleDetail->getArticleSections());
                 $sectionManager->persist();
                 $this->isPersisted  = $sectionManager->isPersisted();
                 $this->errorMessage = $sectionManager->getErrorMessage();
@@ -80,7 +79,7 @@ class ProcessArticleDetail {
             'steps_type', 'last_crawled_at'
         ];
 
-        $allData = $this->getFullDetails($articleUrl);
+        $allData = $this->getArticleFullDetails($articleUrl);
 
         $requiredFields = $this->articleAlreadyExists ? $updateFields : $createFields;
 
@@ -102,7 +101,7 @@ class ProcessArticleDetail {
         return true;
     }
 
-    private function getFullDetails(ArticleUrl $articleUrl) : array {
+    private function getArticleFullDetails(ArticleUrl $articleUrl) : array {
         $articleDetail = $this->articleDetail;
         $title   = Str::limit($articleDetail->getArticleTitle(), 300, '');
         $desc    = Str::limit($articleDetail->getArticleDescription(), 300, '');

@@ -57,7 +57,7 @@ class SectionManager {
         return true;
     }
 
-    // do they have same sections count and same steps count?
+    // are existed section on DB and given section data have same sections count and same steps count?
     private function isDBAndGivenSectionsAreCompatible() : bool {
 
         if($this->alreadyHasSections) {

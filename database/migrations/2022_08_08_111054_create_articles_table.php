@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('tips_en',500)->nullable();
             $table->string('warnings_en',500)->nullable();
             $table->string('warnings_fa',500)->nullable();
+            $table->string('image_url',300)->nullable();
             $table->string('steps_type', 30);
             $table->integer('views')->default(0);
             $table->integer('likes')->default(0);

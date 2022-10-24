@@ -3,32 +3,20 @@
 
 namespace App\Article\CrawlDetail;
 
-use App\Article\Category\CategoryManager;
-use App\Models\Article;
-use App\Models\Url;
 use App\StructuredData\PageStructuredData;
 use Brick\StructuredData\Item;
 use Brick\StructuredData\Reader\JsonLdReader;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Psr7\Uri;
-use GuzzleHttp\RequestOptions;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use ML\JsonLD\JsonLD;
 
 class WikiHowArticleDetail extends ArticleDetail
 {
-    protected ?Collection $ldJsonData;
-
 
     public function parseArticleInfo(): bool {
 
         $this->extractStepsType();
         $this->extractStepsVideos();
+        $this->extractLDJsonScripts();
         $this->processLdJsonScripts();
 
         return true;
@@ -80,20 +68,7 @@ class WikiHowArticleDetail extends ArticleDetail
 
     public function processLdJsonScripts() {
 
-        $pattern = 'application/ld+json';
-        $scripts = collect($this->domCrawler->filter('script'));
-        echo "<pre>";
-
-        $scripts = $scripts->filter(function ($script) use ($pattern) {
-            return $script->getAttribute('type') == $pattern;
-        })->map(function ($script){
-            return json_decode($script->textContent);
-        });
-
-        $this->ldJsonData = $scripts->values();
-        $this->hasLdJsonData = $scripts->count() > 0;
-
-        echo $this->sourceUrl , PHP_EOL, PHP_EOL;
+        echo '<pre>', $this->sourceUrl , PHP_EOL, PHP_EOL;
 
         if($this->hasLdJsonData()) {
             $this->pageStructuredData = new PageStructuredData($this->ldJsonData, $this);
@@ -202,4 +177,5 @@ class WikiHowArticleDetail extends ArticleDetail
 
         return $text;
     }
+
 }

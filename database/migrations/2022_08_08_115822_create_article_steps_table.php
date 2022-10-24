@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('content_fa');
             $table->text('content_en');
             $table->string('image_url')->nullable();
+            $table->string('video_url')->nullable();
             $table->boolean('assets_local')->default(0);
 
             $table->timestamps();
