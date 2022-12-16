@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('views')->default(0);
             $table->timestamps();
 
-            $table->foreign('article_id')->references('id')->on('articles');
+            $table->foreign('article_id')->references('id')->on('articles')->onDelete('cascade');
 
         });
     }

@@ -29,9 +29,9 @@ class PageStructuredData {
     protected bool $hasRecipe = false;
     protected array $allSections = [];
     protected array $allSteps = [];
-    protected ?SD_Article $article;
+    protected ?SD_Article $article = null;
 
-    private ?ArticleDetail $articleDetail;
+    private ?ArticleDetail $articleDetail = null;
 
     public function __construct(Collection $structuredData, ArticleDetail $articleDetail = null) {
         $this->structuredDataObject = $structuredData;

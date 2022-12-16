@@ -53,6 +53,22 @@ class Article extends Model
         return $this->hasMany(ArticleVideo::class);
     }
 
+    //for admin panel
+    public function getBriefInfoOfArticle(): string {
+        $limit = 40;
+        $tips = empty($this->tips_fa) ? "" : "Tips: " . strLimit($this->tips_fa, $limit);
+        $warning = empty($this->warnings_fa) ? "" : "Warning: " . strLimit($this->warnings_fa, $limit);
+        $info = sprintf("Desc: %s\n%s\n%s",
+            strLimit($this->description_fa, $limit),
+            $tips,
+            $warning
+        );
+        return $info;
+    }
+
+    public function getSourceSiteUrl(): ?string {
+        return $this->url?->getFullUrl();
+    }
 
 
 }

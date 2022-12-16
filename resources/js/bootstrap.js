@@ -1,5 +1,5 @@
-import _ from 'lodash';
-window._ = _;
+// import _ from 'lodash';  // 70kb
+// window._ = _;
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -8,7 +8,7 @@ window._ = _;
  */
 
 import axios from 'axios';
-window.axios = axios;
+window.axios = axios; //20kb
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

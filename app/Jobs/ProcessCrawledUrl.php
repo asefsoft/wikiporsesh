@@ -16,14 +16,16 @@ class ProcessCrawledUrl implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected Url $crawledUrl;
+    private bool $force;
 
-    public function __construct(Url $crawledUrl) {
+    public function __construct(Url $crawledUrl, $force = false) {
         $this->crawledUrl = $crawledUrl;
+        $this->force = $force;
     }
 
     public function handle()
     {
-        $processor = new ProcessArticleDetail($this->crawledUrl);
+        $processor = new ProcessArticleDetail($this->crawledUrl, $this->force);
         $processor->process();
     }
 }

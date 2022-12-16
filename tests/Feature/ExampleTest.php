@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Crawl\MyCrawler;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -14,8 +15,12 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response()
     {
-        $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $queueUrls = extractFailedCrawlUrls(0);
+        MyCrawler::doCrawl("https://www.wikihow.com/Category:Personal-Care-and-Style", $queueUrls);
+
+//        $response = $this->get('/test');
+//
+//        $response->assertStatus(200);
     }
 }

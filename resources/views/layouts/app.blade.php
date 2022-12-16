@@ -22,12 +22,12 @@
     <body dir='rtl' class="font-sans antialiased">
         <x-jet-banner />
 
-        <div class="min-h-screen bg-sky-500">
+        <div class="min-h-screen bg-primary">
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
             @if (isset($header))
-                <header class="bg-sky-300 shadow">
+                <header class="bg-white shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>

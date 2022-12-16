@@ -15,7 +15,7 @@ abstract class ArticleDetail {
 
     protected bool $hasLdJsonData = false;
 
-    protected PageStructuredData $pageStructuredData;
+    protected ?PageStructuredData $pageStructuredData = null;
 
     // url of page that article is on it
     protected mixed $sourceUrl;
@@ -29,9 +29,10 @@ abstract class ArticleDetail {
     protected string $articleTitle = "";
     protected string $articleDescription = "";
     protected string $articleImageUrl = "";
-    protected string $articleCategory = "";
+    protected array  $articleCategories = [];
     protected string $articleTips = "";
     protected string $articleWarnings = "";
+    protected null|int $articleViews = null;
     protected string $stepsType = "";
 
     protected bool $articleInfoFound = false;
@@ -65,7 +66,7 @@ abstract class ArticleDetail {
      * escape {{ }} to prevent Vue.js breaks
      */
     protected function escapeMustache() {
-        $this->escape($this->articleCategory);
+//        $this->escape($this->articleCategories);
         $this->escape($this->articleTitle);
     }
 
@@ -112,8 +113,8 @@ abstract class ArticleDetail {
     }
 
 
-    public function getArticleCategory() : string {
-        return $this->articleCategory;
+    public function getArticleCategories() : array {
+        return $this->articleCategories;
     }
 
 
@@ -196,6 +197,10 @@ abstract class ArticleDetail {
 
     public function getArticleImageUrl() : string {
         return $this->articleImageUrl;
+    }
+
+    public function getArticleViews(): ?int {
+        return $this->articleViews;
     }
 
     protected function addErrorMessage(string $msg) {

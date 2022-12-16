@@ -15,7 +15,6 @@ use Psr\Http\Message\UriInterface;
  */
 class Url extends Model
 {
-    public $timestamps = false;
 
     protected $guarded = [];
 
@@ -65,7 +64,7 @@ class Url extends Model
         return true;
     }
 
-    public static function saveNewUrl($url, $content = '', $extraParam = '') {
+    public static function saveNewUrl($url, $content = '', $extraParam = '', $isArticle=0) {
         if(! $url instanceof UriInterface)
             $url = new Uri($url);
 
@@ -77,10 +76,11 @@ class Url extends Model
         $curUrl->path = Str::limit($url->getPath(),800,'');
         $curUrl->query = Str::limit($url->getQuery(),200,'');
         $curUrl->date = now();
+        $curUrl->is_article = $isArticle;
         $urlWasExist = $curUrl->exists;
 
         if (! $urlWasExist) {
-            $curUrl->total_crawled = 0;
+            $curUrl->total_crawled = 1;
         }
         else
             $curUrl->total_crawled++; // new crawl then update counter

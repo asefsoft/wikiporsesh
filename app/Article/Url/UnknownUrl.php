@@ -50,4 +50,8 @@ class UnknownUrl extends ArticleUrl
     function getSlug() : string {
         return '';
     }
+
+    function isExtraValidPath(): bool {
+        return false;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Tools\LoadBalancer;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        app()->singleton('balancer', function ($app) {
+            return new LoadBalancer();
+        });
     }
 }

@@ -16,6 +16,8 @@ class WikiHowArticleDetail extends ArticleDetail
 
         $this->extractStepsType();
         $this->extractStepsVideos();
+        $this->extractArticleDescription();
+        $this->extractArticlePageViews();
         $this->extractLDJsonScripts();
         $this->processLdJsonScripts();
 
@@ -76,15 +78,19 @@ class WikiHowArticleDetail extends ArticleDetail
             $this->articleSections = $this->pageStructuredData->getAllSections();
             $this->articleSteps = $this->pageStructuredData->getAllSteps();
             $this->articleTitle = $this->pageStructuredData->getArticle()?->name ?? '';
-            $this->articleDescription = $this->pageStructuredData->getArticle()?->description ?? '';
+
+            if(empty($this->articleDescription))
+                $this->articleDescription = $this->pageStructuredData->getArticle()?->description ?? '';
+
             $this->articleImageUrl = $this->pageStructuredData->getArticle()?->image?->url ?? '';
 
             $this->extractTipsAndWarnings();
 
-            //CategoryManager::addCategoriesToArticle($this->pageStructuredData->getBreadCrumbs(), Article::first());
             echo "Ready To Save: ", $this->pageStructuredData->hasEnoughStepsAndSections() ? "YES" : "NO!", PHP_EOL, PHP_EOL;
             echo implode("\n", $this->pageStructuredData->getBreadCrumbs(true)), PHP_EOL, PHP_EOL;
             echo "Article Type: ", $this->pageStructuredData->getArticleInstructionType(), PHP_EOL;
+
+            $this->articleCategories = $this->pageStructuredData->getBreadCrumbs();
 
             echo "Steps DOM Videos: ", count($this->stepsVideos ?? []) , PHP_EOL;
             echo "Steps Mapped Videos: ", $this->pageStructuredData->getTotalVideos() , PHP_EOL;
@@ -147,7 +153,10 @@ class WikiHowArticleDetail extends ArticleDetail
 
             if($items->count()){
                 $items->each(function ($liItem) use(&$text){
-                    $text[] = "* " . $liItem->filter('div')->text(); // all li s
+                    $div = $liItem->filter('div');
+                    if($div->count()){
+                        $text[] = "* " . $div->text(); // all li s
+                    }
                 });
 
             }
@@ -167,7 +176,8 @@ class WikiHowArticleDetail extends ArticleDetail
 
     public function isReadyToBeSaved() : bool {
         return ($this->pageStructuredData?->hasEnoughStepsAndSections() ?? false) &&
-               ($this->pageStructuredData?->hasArticle() ?? false);
+               ($this->pageStructuredData?->hasArticle() ?? false) &&
+                count($this->articleCategories) > 0;
     }
 
     private function stripExtraWords($text) : string|array {
@@ -176,6 +186,36 @@ class WikiHowArticleDetail extends ArticleDetail
         $text = str_replace(" X Research source", '', $text);
 
         return $text;
+    }
+
+    // total views of article
+    private function extractArticlePageViews() {
+        $nodes = $this->domCrawler->filter('#social_proof_sidebox .sp_inner .sp_text');
+        $text = [];
+
+        if ($nodes->count()) {
+            foreach ($nodes as $node) {
+                if(str_contains($node->textContent, "Views:")) {
+                    $views = trim(str_replace(["Views:",",", " "], "", $node->textContent));
+                    $views = preg_replace('/[[:^print:]]/', '', $views);// remove non ascii characters
+                        if(is_numeric($views))
+                            $this->articleViews = $views;
+                    return;
+                }
+            }
+        }
+    }
+
+    private function extractArticleDescription(): void {
+        $nodes = $this->domCrawler->filter('#mf-section-0');
+        $desc = '';
+
+        if ($nodes->count()) {
+            $desc = trim($nodes->text());
+        }
+
+        $this->articleDescription= $desc;
+
     }
 
 }

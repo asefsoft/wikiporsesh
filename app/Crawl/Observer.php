@@ -18,7 +18,8 @@ class Observer extends MyCrawlObserver {
 
     static int $count = 0;
     static int $videoCount = 0;
-    static int $videoSaved = 0;
+    static int $articleSaved = 0;
+    static int $willCrawl = 0;
 
     protected $crawler = null;
 
@@ -41,24 +42,27 @@ class Observer extends MyCrawlObserver {
         }
 
         $urlValidator = ArticleUrlFactory::make($url);
-
+        $isValidArticleUrl = $urlValidator->isValidArticleUrl();
 
         // save url and its content into db
         $content = $response->getBody();
-        $crawledUrlDB   = Url::saveNewUrl($url, $content);
+        $crawledUrlDB  = Url::saveNewUrl($url, $content,'', $isValidArticleUrl?1:0);
 
         Observer::$count ++;
 
         // emit the 'url crawled' event
-        if ($urlValidator->isValidArticleUrl()) {
-            //event(new UrlCrawled($cr_url,$crawler,false,true,false,"Crawler"));
+        if ($isValidArticleUrl) {
             ProcessCrawledUrl::dispatch($crawledUrlDB);
+            Observer::$articleSaved++;
         }
 
-        logMe('crawl_done', sprintf("%s - %s", $url, number_format_short(Str::length($content))));
+        logMe('crawl_done', sprintf("%s - %s%s", $url,
+            number_format_short(Str::length($content)),
+            $isValidArticleUrl ? ' IS-ARTICLE' : ''
+        ));
 
         Tools::echo(sprintf("<p>%s article saved, %s crawled: %s, url was crawled: %s times</p>",
-            Observer::$videoSaved, Observer::$count, Str::limit(urldecode($url), 70), $crawledUrlDB->total_crawled));
+            Observer::$articleSaved, Observer::$count, Str::limit(urldecode($url), 70), $crawledUrlDB->total_crawled));
 
         //        print_r(request()->all());
 
@@ -80,16 +84,31 @@ class Observer extends MyCrawlObserver {
 
     }
 
+    public function willCrawl(UriInterface $url) : void
+    {
+        static::$willCrawl++;
+        $urlValidator = ArticleUrlFactory::make($url);
+
+        logMe('will_crawl', sprintf("%s %s queries: %s %s", static::$willCrawl, $url,
+            number_format($GLOBALS["STAT_QUERY_COUNT"]),
+            $urlValidator->isValidArticleUrl() ? ' IS-ARTICLE' : ''
+        ));
+    }
 
     public function crawlFailed(
         \Psr\Http\Message\UriInterface $url, \GuzzleHttp\Exception\RequestException $requestException,
         ?\Psr\Http\Message\UriInterface $foundOnUrl = null
     ) : void {
 
-        $url = urldecode($url);
-        echo "<br/>url crawl failed: $url <br/>---------------------------<br/>\n";
+        logMe('crawl_done',
+            sprintf("Error on %s, '%s'", $url, Str::limit(urldecode($requestException->getMessage()), 200)
+        ));
+
+        $url2 = urldecode($url);
+        echo "<br/>url crawl failed: $url2 <br/>---------------------------<br/>\n";
         echo Str::limit(urldecode($requestException->getMessage()), 200);
         echo "\n<br/>------------------------------><br/>\n";
+        sleep(5);
     }
 
     public function getCrawler() {

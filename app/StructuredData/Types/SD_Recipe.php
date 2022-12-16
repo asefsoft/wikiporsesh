@@ -109,6 +109,8 @@ class SD_Recipe extends StructuredData implements HasStep, HasVideo, HasSection 
             if ($image->count()) {
                 $image = $image->attr('data-src');
             }
+            else
+                $image = "";
         }
 
         if(empty($image))

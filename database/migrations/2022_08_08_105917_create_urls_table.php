@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("query",200);
             $table->timestamp("date")->index();
             $table->integer("total_crawled")->default(0);
+            $table->tinyInteger("is_article")->default(0)->index();
             $table->timestamps();
         });
     }

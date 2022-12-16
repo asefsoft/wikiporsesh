@@ -3,9 +3,9 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
 
-    presets: [
-         require('./vendor/wireui/wireui/tailwind.config.js')
-    ],
+    // presets: [
+    //      // require('./vendor/wireui/wireui/tailwind.config.js')
+    // ],
 
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
@@ -19,10 +19,16 @@ module.exports = {
     ],
 
     theme: {
+        // colors: {
+        //     // bg-primary
+        // },
         extend: {
-            fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
-            },
+            // fontFamily: {
+            //     sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+            // },
+            colors: {
+                "primary": "rgb(48 86 211)"
+            }
         },
     },
 

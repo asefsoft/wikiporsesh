@@ -7,6 +7,8 @@
     "require": {
         "php": "^8.0.2",
         "brick/structured-data": "^0.1.1",
+        "filament/filament": "^2.0",
+        "google/cloud-translate": "^1.12",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
         "laravel/jetstream": "^2.10",
@@ -14,6 +16,7 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.5",
         "ml/json-ld": "^1.2",
+        "morilog/jalali": "^3.4",
         "spatie/crawler": "^7.1",
         "symfony/css-selector": "^6.0",
         "symfony/dom-crawler": "^6.0",
@@ -21,6 +24,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^2.12",
+        "doctrine/dbal": "^3.5",
         "fakerphp/faker": "^1.9.1",
         "laravel-lang/lang": "^11.0",
         "laravel/pint": "^1.0",
@@ -49,7 +53,8 @@
             "@php artisan package:discover --ansi"
         ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan filament:upgrade"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

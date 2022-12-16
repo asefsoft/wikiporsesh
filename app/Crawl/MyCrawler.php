@@ -12,6 +12,7 @@ use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\Crawler\Crawler;
+use Spatie\Crawler\CrawlQueues\ArrayCrawlQueue;
 use Spatie\Crawler\CrawlUrl;
 
 class MyCrawler extends Crawler
@@ -31,7 +32,7 @@ class MyCrawler extends Crawler
 
     }
 
-    public static function doCrawl(string $url) {
+    public static function doCrawl(string $url, $addToQueueUrls = []) {
         Tools::init_output_flushing();
 
         $myobs = new Observer();
@@ -43,18 +44,31 @@ class MyCrawler extends Crawler
         $maxDepth = $request->has('just_requested_url') ? 0 : ifProduction(2, 3);
 
         $options = $request->has('cookies') ? ['cookies'=>$request->get('cookies')]  : [];
-
+        $options['connect_timeout']= ifProduction(3, 16);
+        $options['timeout']= ifProduction(7, 30);
+        $options['verify']=false;
 
         $crawler = MyCrawler::create($options)
-                            ->setCrawlObserver($myobs)
-                            ->setConcurrency(1)
-                            ->setMaximumDepth($maxDepth)
-                            ->setCrawlProfile($myFilter)
-                            ->setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0')
-                            ->setDelayBetweenRequests(ifProduction(2000 , 400))
-                            ->ignoreRobots()
-                            //->enableBalancer()
-                            ->setTotalCrawlLimit(\request()->get('maxcrawls', ifProduction(100,5000)));
+            ->setParseableMimeTypes(['text/html', 'text/plain'])
+            ->setCrawlObserver($myobs)
+            ->setConcurrency(2)
+            ->setMaximumDepth($maxDepth)
+            ->setCrawlProfile($myFilter)
+            ->setUserAgent('Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0')
+            ->setDelayBetweenRequests(ifProduction(2000, 7800))
+            ->ignoreRobots()
+            ->enableBalancer()
+            ->setTotalCrawlLimit(\request()->get('maxcrawls', ifProduction(100, 5000)));
+
+        // manually add urls to queue
+        if(count($addToQueueUrls)) {
+            $arrayCrawlQueue = new ArrayCrawlQueue();
+            foreach ($addToQueueUrls as $qUrl) {
+                $arrayCrawlQueue->add(CrawlUrl::create(new Uri($qUrl)));
+            }
+
+            $crawler->setCrawlQueue($arrayCrawlQueue);
+        }
 
 //        dump($crawler);
 
@@ -71,7 +85,8 @@ class MyCrawler extends Crawler
             $crawler->requestId, $url, $hasContent ? 'content' : ''
         );
 
-        logMe('load_balance', $log);
+        if($crawler->isEnableBalancer())
+            logMe('load_balance', $log);
 
         $crawler->startCrawling($url);
 
@@ -84,13 +99,13 @@ class MyCrawler extends Crawler
 
 
         Tools::echo(sprintf("<br>\n%s article saved, %s total urls found, %s urls was valid, %s urls was article, %s url was sub url, and <strong>%s</strong> urls crawled<br>\n
-<p style='direction: rtl;text-align: left'>total crawl time %s</p>", Observer::$videoSaved,
+<p style='direction: rtl;text-align: left'>total crawl time %s</p>", Observer::$articleSaved,
             Filter_Crawl::$totalCount, Filter_Crawl::$validCount, Filter_Crawl::$validVideoCount,
             Filter_Crawl::$validSubUrlCount, Observer::$count, $diff));
 
         if($request->has('is_google_search'))
             Log::info(sprintf("google_search_result: %s article saved, %s urls was article, and %s urls crawled for '%s' in %s",
-                Observer::$videoSaved,
+                Observer::$articleSaved,
                 Filter_Crawl::$validVideoCount,
                 Observer::$count, $request->get('term'), $diff));
 
@@ -118,7 +133,7 @@ class MyCrawler extends Crawler
         Filter_Crawl::$totalShould = 0;
         Filter_Crawl::$validVideoCount = 0;
         Filter_Crawl::$validSubUrlCount = 0;
-        Observer::$videoSaved = 0;
+        Observer::$articleSaved = 0;
         Observer::$videoCount = 0;
         Observer::$count = 0;
         MyCrawler::$CRAWLED_ARTICLES = [];

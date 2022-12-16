@@ -18,6 +18,7 @@
         "vite": "^3.0.0"
     },
     "dependencies": {
+        "cssnano": "^5.1.14",
         "daisyui": "^2.20.0"
     }
 }

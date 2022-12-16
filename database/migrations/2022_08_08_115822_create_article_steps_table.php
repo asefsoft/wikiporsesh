@@ -27,8 +27,8 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('article_id')->references('id')->on('articles');
-            $table->foreign('section_id')->references('id')->on('article_sections')->cascadeOnDelete();
+            $table->foreign('article_id')->references('id')->on('articles')->onDelete('cascade');
+            $table->foreign('section_id')->references('id')->on('article_sections')->onDelete('cascade');
             $table->unique(["article_id","section_id", "order"]);
 
         });

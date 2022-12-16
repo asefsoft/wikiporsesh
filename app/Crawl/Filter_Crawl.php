@@ -42,10 +42,14 @@ class Filter_Crawl extends CrawlProfile {
         $isMainPageUrl = $validator->isMainUrl();
         $isUrlIgnored = $validator->isIgnoredPath();
         $isCategoryUrl = $validator->isCategoryUrl();
+        $isExtraValidPath = $validator->isExtraValidPath();
 
         $video = null;
 
-        $shouldCrawl = $isMainPageUrl || $isValidArticleUrl || $isCategoryUrl || Filter_Crawl::$totalCount <= 2 || $isValidSubUrl;
+        $isFirstPage = Filter_Crawl::$totalCount <= 20;// todo: change to 2
+        $shouldCrawl = $isCategoryUrl || $isValidArticleUrl || $isValidSubUrl || $isExtraValidPath || $isFirstPage;
+
+        $reasonToSkip = "";
 
         if ($shouldCrawl && ! $isUrlIgnored) {
 
@@ -57,7 +61,7 @@ class Filter_Crawl extends CrawlProfile {
 
             Filter_Crawl::$validCount++;
 
-            // dont crawl a video url twice
+            // dont crawl a  url twice
             if($isValidArticleUrl) {
                 Filter_Crawl::$validVideoCount++;
 
@@ -66,6 +70,7 @@ class Filter_Crawl extends CrawlProfile {
                     if (Url::isUrlCrawled($url, "", false, $video) &&
                         Filter_Crawl::$totalCount > 2
                     ) {
+                        $reasonToSkip = "Url Already Crawled";
                         $should = false;
                     }
                 }
@@ -73,13 +78,13 @@ class Filter_Crawl extends CrawlProfile {
 
         }
         else {
+            $reasonToSkip = $isUrlIgnored ? "Url Ignored" : "Invalid Url";
             $should = false;
         }
 
-        $status = $should ? "YES" : "NO ";
-        $status = $isUrlIgnored ? "IGNORED" : $status;
+        $status = $should ? "YES" : "NO >> " . $reasonToSkip;
 
-        logMe('crawl_filters', sprintf("%s - %s", $status, $url), false);
+        logMe('crawl_filters', sprintf("%s %s - %s, total: %s", Filter_Crawl::$validCount, $status, $url, Filter_Crawl::$totalCount), false);
             //$this->print_log($should, $url, $video);
 
         if($should)

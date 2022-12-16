@@ -28,6 +28,12 @@ class WikiHowArticleUrl extends ArticleUrl
         '/Newsletters',
         '/Tech-Help-Pro',
         '/Randomizer',
+        '/Special:UserLogin',
+        '/Games/*',
+    ];
+
+    protected array $extraValidPaths = [
+        'Special:'
     ];
 
 
@@ -97,6 +103,9 @@ class WikiHowArticleUrl extends ArticleUrl
             return new Uri($url);
         }
 
+        if($this->url->getQuery()!='')
+            $a=1;
+
         return $this->url->withQuery('');
     }
 
@@ -118,5 +127,14 @@ class WikiHowArticleUrl extends ArticleUrl
 
     function getSlug() : string {
         return str_replace('/', '', $this->url->getPath());
+    }
+
+    function isExtraValidPath(): bool {
+        foreach ($this->extraValidPaths as $path) {
+            if(str_contains($this->url->getPath(), $path))
+                return true;
+        }
+
+        return false;
     }
 }

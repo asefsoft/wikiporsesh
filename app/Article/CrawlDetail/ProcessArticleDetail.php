@@ -2,6 +2,7 @@
 
 namespace App\Article\CrawlDetail;
 
+use App\Article\Category\CategoryManager;
 use App\Article\Factory\ArticleDetailFactory;
 use App\Article\Factory\ArticleUrlFactory;
 use App\Article\Persist\SectionManager;
@@ -22,16 +23,25 @@ class ProcessArticleDetail {
     protected bool $isPersisted = false;
     protected string $errorMessage = '';
     protected ?ArticleDetail $articleDetail;
+    private bool $forceToProcess;
+    private bool $ignored = false;
 
-    public function __construct(Url $crawledUrl) {
+    public function __construct(Url $crawledUrl, bool $forceToProcess = false) {
         $this->crawledUrl = $crawledUrl;
         $this->crawledUrl->load(['article.sections.steps']);
+        $this->forceToProcess = $forceToProcess;
     }
 
     public function process() {
+
+        if(! $this->shouldProcessAndSaveArticle()) {
+            $this->ignored = true;
+            return;
+        }
+
         $articleUrl = ArticleUrlFactory::make($this->crawledUrl->getFullUrl());
 
-        // get video info
+        // get Article info
         $this->articleDetail = ArticleDetailFactory::make($articleUrl, $this->crawledUrl);
 
         $this->articleAlreadyExists = $this->crawledUrl->hasArticle();
@@ -59,6 +69,27 @@ class ProcessArticleDetail {
 
     }
 
+    // is crawled url already has an article on our db?
+    public function alreadyHasArticle(): bool {
+        return $this->crawledUrl->article instanceof Article;
+    }
+
+    protected function shouldProcessAndSaveArticle(): bool {
+        $should = true;
+
+        // is processed before and has article
+        if($this->alreadyHasArticle()) {
+            // dont process if it's not forced
+            if(! $this->forceToProcess)
+                $should = false;
+            // dont process if Article was edited by me, even in force mode
+            elseif (!empty($this->crawledUrl?->article?->edited_at))
+                $should = false;
+        }
+
+        return $should;
+    }
+
     private function createOrUpdateArticle(ArticleUrl $articleUrl) : bool {
 
         $createFields = [
@@ -66,7 +97,7 @@ class ProcessArticleDetail {
             'total_sections', 'total_steps', 'title_fa',
             'description_fa', 'description_en', 'image_url',
             'title_en', 'tips_fa', 'tips_en', 'warnings_en',
-            'warnings_fa', 'steps_type', 'last_crawled_at'
+            'warnings_fa', 'steps_type', 'last_crawled_at', 'source_views'
         ];
 
         $updateFields = [
@@ -76,6 +107,7 @@ class ProcessArticleDetail {
             'description_en',
             'tips_en',
             'warnings_en',
+            'source_views',
             'steps_type', 'last_crawled_at'
         ];
 
@@ -97,6 +129,9 @@ class ProcessArticleDetail {
             $this->errorMessage = $e->getMessage();
             return false;
         }
+
+        CategoryManager::addCategoriesToArticle($this->articleDetail->getArticleCategories(), $this->article);
+
 
         return true;
     }
@@ -125,6 +160,7 @@ class ProcessArticleDetail {
             'warnings_en'    => $warning,
             'warnings_fa'    => $warning,
             'steps_type'     => $articleDetail->getStepsType(),
+            'source_views'   => $articleDetail->getArticleViews(),
             'last_crawled_at' => now()
         ];
     }
@@ -140,11 +176,11 @@ class ProcessArticleDetail {
     private function dispatchEvents() {
         if($this->isPersisted){ // is article save successfully
             if($this->articleAlreadyExists)
-                event(new NewArticleCrawled($this));
-            else
                 event(new ArticleReCrawled($this));
+            else
+                event(new NewArticleCrawled($this));
         }
-        else
+        elseif(! $this->ignored)
             event(new FailedArticleCrawl($this)); // there was error?
     }
 

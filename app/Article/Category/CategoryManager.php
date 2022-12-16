@@ -31,7 +31,7 @@ class CategoryManager
     public static function addCategoriesToArticle(array $categories, Article $article) {
         $articleCategoryIDs = [];
 
-        // first make sure all categories and sub categories are existed
+        // first make sure all categories and sub categories are exists
         $processedCategories= static::addCategories($categories);
 
         // then extract last category id on each chain
@@ -45,7 +45,7 @@ class CategoryManager
             }
 
             $categoryDB = $lastChild->getCategoryDB();
-            $articleCategoryIDs = $categoryDB->id;
+            $articleCategoryIDs[] = $categoryDB->id;
         }
 
         // sync article categories

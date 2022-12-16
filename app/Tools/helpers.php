@@ -1,14 +1,18 @@
 <?php
 
 use Carbon\Carbon;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use Morilog\Jalali\Jalalian;
 
-function logMe($fileName, $log, $addDate = true){
+function logMe($fileName, $log, $addDateToLog = true, $addDateToFileName = true){
     try {
-        $date = $addDate ? now()->format("Y/m/d H:i:s") . ' ' : '';
-        File::append(storage_path() . "/logs/$fileName-" . now()->toDateString() . '.log', $date . $log . "\n");
+        $prependDate = $addDateToLog ? now()->format("Y/m/d H:i:s") . ' ' : '';
+        $fileNameDate = $addDateToFileName ? "-" . now()->toDateString() : '';
+        File::append(storage_path() . "/logs/$fileName" . $fileNameDate . '.log',
+            $prependDate . $log . "\n");
     } catch (Exception $e) {
-        echo sprintf("Error on log_me func: %s, log: %s<br>/n", $e->getMessage(), $log);
+        echo sprintf("Error on log_me func: %s, log: %s<br>\n", $e->getMessage(), $log);
     }
 }
 
@@ -22,6 +26,15 @@ function isProduction() : bool {
 
 function ifProduction($productionValue, $notProductionValue) {
     return isProduction() ? $productionValue : $notProductionValue;
+}
+
+// return our load balancer for balance crawl request
+function balancer() {
+    return app()->make('balancer');
+}
+
+function getLeftOrderHtmlString($text): HtmlString {
+    return new HtmlString(sprintf("<div style='direction: ltr; text-align: left'>%s</div>", $text));
 }
 
 function number_format_short( $n , $add_plus = true, $rtl = false) {
@@ -61,6 +74,34 @@ function number_format_short( $n , $add_plus = true, $rtl = false) {
     $r = $rtl ? $plus . $n_format . $suffix : $n_format . $suffix . $plus;
 
     return !empty($n_format . $suffix) ? $r : 0;
+}
+
+function getDateString($date, $type = "remaining", $format = "d F, Y H:i:s") {
+    if (empty($date))
+        return "";
+
+    if(!$date instanceof Carbon)
+        $date = Carbon::parse($date);
+
+    switch ($type) {
+        default:
+        case "remaining":
+            return $date->diffForHumans();
+        case "jalali":
+        case "persian":
+            return jalalianDate($date, $format);
+        case "miladi":
+        case "jeorgian":
+            return $date->format($format);
+
+    }
+}
+
+function jalalianDate($date , $format = 'd F, Y', $default = '') : string {
+    if(empty($date))
+        return $default;
+
+    return Jalalian::forge($date)->format($format);
 }
 
 function only_fields ($models, array $fields, $limit_string = 80, array $headers = [], array $footers = []) {

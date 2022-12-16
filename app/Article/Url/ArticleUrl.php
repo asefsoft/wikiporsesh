@@ -12,10 +12,12 @@ abstract class ArticleUrl
     protected array $validHosts = [ ];
     protected array $subUrls = [];
     protected array $ignoredPaths = [];
+    protected array $extraValidPaths = [];
     protected UriInterface $url;
 
     public function __construct(UriInterface $url) {
         $this->url = $url;
+        $this->init();
     }
 
     protected abstract function init();
@@ -33,6 +35,8 @@ abstract class ArticleUrl
     abstract function isIgnoredPath() : bool;
 
     abstract function isCategoryUrl() : bool;
+
+    abstract function isExtraValidPath() : bool;
 
     // remove extra chars of url which does not affect in uniqueness of url
     abstract function getCleanedUrl() : UriInterface;

@@ -12,7 +12,6 @@ use Spatie\Crawler\CrawlObservers\CrawlObserver;
 class MyCrawlObserver extends CrawlObserver
 {
 
-
     public function crawled(
         UriInterface $url,
         ResponseInterface $response,
