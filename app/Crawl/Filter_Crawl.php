@@ -41,12 +41,12 @@ class Filter_Crawl extends CrawlProfile {
         $isValidArticleUrl = $validator->isValidArticleUrl();
         $isMainPageUrl = $validator->isMainUrl();
         $isUrlIgnored = $validator->isIgnoredPath();
-        $isCategoryUrl = $validator->isCategoryUrl();
+        $isCategoryUrl = $validator->isCategoryUrl() && rand(1,100) < 20;// todo:
         $isExtraValidPath = $validator->isExtraValidPath();
 
         $video = null;
 
-        $isFirstPage = Filter_Crawl::$totalCount <= 20;// todo: change to 2
+        $isFirstPage = Filter_Crawl::$totalCount <= 5;// todo: change to 2
         $shouldCrawl = $isCategoryUrl || $isValidArticleUrl || $isValidSubUrl || $isExtraValidPath || $isFirstPage;
 
         $reasonToSkip = "";

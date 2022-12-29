@@ -4,6 +4,7 @@
 namespace App\Article\Url;
 
 
+use App\Article\AssetsManager\AssetType;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Str;
 use Psr\Http\Message\UriInterface;
@@ -16,6 +17,10 @@ class WikiHowArticleUrl extends ArticleUrl
         'wikihow.com',
         'www.wikihow.com',
     ];
+
+    protected ?string $imageAssetPrefix = "images";
+    protected ?string $videoAssetPrefix = "video";
+    protected ?string $assetHost = "www.wikihow.com";
 
     protected array $ignoredPaths = [
         '/Course/*',
@@ -137,4 +142,8 @@ class WikiHowArticleUrl extends ArticleUrl
 
         return false;
     }
+
+
+
+
 }

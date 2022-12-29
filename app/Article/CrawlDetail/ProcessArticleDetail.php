@@ -67,6 +67,8 @@ class ProcessArticleDetail {
         // events
         $this->dispatchEvents();
 
+        unset($articleUrl, $this->articleDetail, $this->article);
+
     }
 
     // is crawled url already has an article on our db?
@@ -96,7 +98,7 @@ class ProcessArticleDetail {
             'site_id', 'author_id', 'url_id', 'slug',
             'total_sections', 'total_steps', 'title_fa',
             'description_fa', 'description_en', 'image_url',
-            'title_en', 'tips_fa', 'tips_en', 'warnings_en',
+            'title_en', 'tips_fa', 'tips_en', 'warnings_en','is_featured',
             'warnings_fa', 'steps_type', 'last_crawled_at', 'source_views'
         ];
 
@@ -104,6 +106,8 @@ class ProcessArticleDetail {
             'total_sections',
             'total_steps', 'image_url',
             'title_en',
+            'title_fa',
+            'is_featured',
             'description_en',
             'tips_en',
             'warnings_en',
@@ -151,6 +155,7 @@ class ProcessArticleDetail {
             'image_url'      => Str::limit($articleDetail->getArticleImageUrl(),300 ,''),
             'total_sections' => $articleDetail->getTotalArticleSections(),
             'total_steps'    => $articleDetail->getTotalArticleSteps(),
+            'is_featured'    => $articleDetail->isFeaturedArticle(),
             'title_fa'       => $title,
             'title_en'       => $title,
             'description_en' => $desc,

@@ -43,7 +43,7 @@ class ManualGoogleApiTranslator extends BaseTranslator
 
     private function getTranslatedSentences(): string {
         $trans = json_decode($this->requestContent, true);
-        $trans = collect(\Arr::get($trans, 'sentences'))->pluck('trans')->join("\n");
+        $trans = collect(\Arr::get($trans, 'sentences'))->pluck('trans')->join(" ");
         return $trans;
     }
 

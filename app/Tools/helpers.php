@@ -16,6 +16,18 @@ function logMe($fileName, $log, $addDateToLog = true, $addDateToFileName = true)
     }
 }
 
+function isAdmin(): bool {
+    static $isAdmin;
+
+    $booted = app()->isBooted();
+
+    if ( !empty($isAdmin) && $booted) {
+        return $isAdmin;
+    } else {
+        return $isAdmin = auth()->user() != null && auth()->user()->can('manage');
+    }
+}
+
 function isLocal() : bool {
     return app()->environment('local');
 }
@@ -154,6 +166,10 @@ function strLimit($text, $limit = 100, $end = '...') {
     return Str::limit($text, $limit, $end);
 }
 
+function isDebug(): bool {
+    return request()->has( 'debug' );
+}
+
 function loadTime() {
     $load_time = getTook();
     echo sprintf("<took style='display: none'>%.2f sec</took>\n<query style='display: none'>%s ms, count: %s, slow: %s</query>", $load_time,
@@ -176,6 +192,11 @@ function loadTime() {
 
         Log::warning($q);
     }
+}
+
+function needLivewireScripts(): bool {
+    $route = Route::getCurrentRoute()->uri();
+    return str_starts_with($route, "user/");
 }
 
 function getTook() : float {

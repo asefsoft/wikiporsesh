@@ -1,5 +1,5 @@
-@import "nunito-fonts.css";
+/*@import "nunito-fonts.css";*/
+@import "vazir-fonts.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-

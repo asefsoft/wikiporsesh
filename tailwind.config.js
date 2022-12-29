@@ -19,15 +19,15 @@ module.exports = {
     ],
 
     theme: {
-        // colors: {
-        //     // bg-primary
-        // },
         extend: {
-            // fontFamily: {
-            //     sans: ['Nunito', ...defaultTheme.fontFamily.sans],
-            // },
+            fontFamily: {
+                sans: ['Vazir FD', ...defaultTheme.fontFamily.sans],
+            },
             colors: {
-                "primary": "rgb(48 86 211)"
+                "primary": {
+                    DEFAULT: "rgb(48 86 211)",
+                    "dark" : "#2244b7"
+                }
             }
         },
     },

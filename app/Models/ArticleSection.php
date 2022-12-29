@@ -22,4 +22,8 @@ class ArticleSection extends Model
     public function article() : Relation {
         return $this->belongsTo(Article::class);
     }
+
+    public function isSingleStep() : bool {
+        return count($this->steps) == 1;
+    }
 }

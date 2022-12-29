@@ -23,7 +23,7 @@ return new class extends Migration
             $table->tinyInteger('total_steps')->unsigned()->index();
             $table->string('title_fa',300)->nullable();
             $table->string('title_en',300);
-            $table->string('description_fa',300);
+            $table->string('description_fa',500);
             $table->string('description_en',300);
             $table->string('tips_fa',500)->nullable();
             $table->string('tips_en',500)->nullable();
@@ -36,9 +36,12 @@ return new class extends Migration
             $table->integer('likes')->default(0)->index();
             $table->integer('dislikes')->default(0)->index();
             $table->tinyInteger('rate')->default(0)->index()->comment('between 0 and 100');
+            $table->tinyInteger('auto_translated_percent')->default(0);
             $table->boolean('visible')->default(1)->index();
             $table->boolean('is_featured')->default(0)->index();
             $table->boolean('is_translated')->default(0)->index();
+            $table->boolean('is_translate_designated')->default(0)->index()->comment("برای ترجمه انتخاب شده است");
+            $table->boolean('is_skipped')->default(0)->index();
             $table->timestamp('edited_at')->nullable();
             $table->timestamp('last_crawled_at')->nullable();
             $table->timestamp('published_at')->nullable();

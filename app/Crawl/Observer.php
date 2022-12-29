@@ -7,6 +7,7 @@ use App\Article\Factory\ArticleUrlFactory;
 use App\Jobs\ProcessCrawledUrl;
 use App\Models\Url;
 use App\Tools\Tools;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Str;
 use Psr\Http\Message\ResponseInterface;
@@ -17,9 +18,10 @@ use Spatie\Crawler\CrawlUrl;
 class Observer extends MyCrawlObserver {
 
     static int $count = 0;
-    static int $videoCount = 0;
+    static int $articleCount = 0;
     static int $articleSaved = 0;
     static int $willCrawl = 0;
+    static int $errorsCount = 0;
 
     protected $crawler = null;
 
@@ -56,31 +58,15 @@ class Observer extends MyCrawlObserver {
             Observer::$articleSaved++;
         }
 
-        logMe('crawl_done', sprintf("%s - %s%s", $url,
+        logMe('crawl_done', sprintf("%s %s - %s%s",
+            self::$articleSaved,
+            $url,
             number_format_short(Str::length($content)),
             $isValidArticleUrl ? ' IS-ARTICLE' : ''
         ));
 
         Tools::echo(sprintf("<p>%s article saved, %s crawled: %s, url was crawled: %s times</p>",
             Observer::$articleSaved, Observer::$count, Str::limit(urldecode($url), 70), $crawledUrlDB->total_crawled));
-
-        //        print_r(request()->all());
-
-        //        $pending_url = $crawler->getCrawlQueue()->getFirstPendingUrl();
-        //        Tools::echo(sprintf("next pending url: %s\n<br>", Str::limit($pending_url ? $pending_url->getId(): 'Nothing',60)));
-
-
-        // stop if max crawls reached
-        //if(request()->has('maxcrawls') && Observer::$video_count + 1 > request()->get('maxcrawls')) {
-        //    Tools::echo(sprintf("Max crawls reached: %s. we will stop crawling ...", request()->get('maxcrawls')));
-        //    $crawler->setCrawlQueue(new ArrayCrawlQueue());
-        //}
-
-        // don't crawl anymore if memory limit reached
-        //if(Tools::is_memory_limit_reached()) {
-        //    Tools::echo(sprintf("<strong>Memory limit reached!! (%s%%) Crawling stopped.</strong>", config('app.memory_limit_percent')));
-        //    $crawler->setCrawlQueue(new ArrayCrawlQueue());
-        //}
 
     }
 
@@ -96,19 +82,25 @@ class Observer extends MyCrawlObserver {
     }
 
     public function crawlFailed(
-        \Psr\Http\Message\UriInterface $url, \GuzzleHttp\Exception\RequestException $requestException,
-        ?\Psr\Http\Message\UriInterface $foundOnUrl = null
+        UriInterface $url, RequestException $requestException,
+        ?UriInterface $foundOnUrl = null
     ) : void {
 
+        self::$errorsCount++;
+
         logMe('crawl_done',
-            sprintf("Error on %s, '%s'", $url, Str::limit(urldecode($requestException->getMessage()), 200)
+            sprintf("%s Error on %s, '%s'",
+                self::$errorsCount,
+                $url, Str::limit(urldecode($requestException->getMessage()), 200)
         ));
 
         $url2 = urldecode($url);
-        echo "<br/>url crawl failed: $url2 <br/>---------------------------<br/>\n";
+        echo "url crawl failed: $url2 \n";
         echo Str::limit(urldecode($requestException->getMessage()), 200);
-        echo "\n<br/>------------------------------><br/>\n";
-        sleep(5);
+        echo "\n";
+
+        $sleepDuration = max(50, 5 + (self::$errorsCount / 10));
+        sleep($sleepDuration);
     }
 
     public function getCrawler() {

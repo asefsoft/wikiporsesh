@@ -7,6 +7,9 @@
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
+import jquery from 'jquery'
+window.$ = window.jQuery = jquery;
+
 import axios from 'axios';
 window.axios = axios; //20kb
 

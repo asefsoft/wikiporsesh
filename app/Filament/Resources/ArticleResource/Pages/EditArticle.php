@@ -8,6 +8,7 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditArticle extends EditRecord
 {
+
     protected static string $resource = ArticleResource::class;
 
     protected function getActions(): array

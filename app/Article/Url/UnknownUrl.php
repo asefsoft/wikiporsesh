@@ -4,6 +4,7 @@
 namespace App\Article\Url;
 
 
+use App\Article\AssetsManager\AssetType;
 use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Str;
 use Psr\Http\Message\UriInterface;
@@ -53,5 +54,9 @@ class UnknownUrl extends ArticleUrl
 
     function isExtraValidPath(): bool {
         return false;
+    }
+
+    function convertRelativeToFullUrl(?AssetType $assetType = null) : UriInterface {
+        return $this->url;
     }
 }

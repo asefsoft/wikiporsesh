@@ -20,6 +20,7 @@ class WikiHowArticleDetail extends ArticleDetail
         $this->extractArticlePageViews();
         $this->extractLDJsonScripts();
         $this->processLdJsonScripts();
+        $this->determineIsArticleFeatured();
 
         return true;
     }
@@ -77,7 +78,7 @@ class WikiHowArticleDetail extends ArticleDetail
 
             $this->articleSections = $this->pageStructuredData->getAllSections();
             $this->articleSteps = $this->pageStructuredData->getAllSteps();
-            $this->articleTitle = $this->pageStructuredData->getArticle()?->name ?? '';
+            $this->articleTitle = $this->getClearedArticleTitle(); ;
 
             if(empty($this->articleDescription))
                 $this->articleDescription = $this->pageStructuredData->getArticle()?->description ?? '';
@@ -94,21 +95,24 @@ class WikiHowArticleDetail extends ArticleDetail
 
             echo "Steps DOM Videos: ", count($this->stepsVideos ?? []) , PHP_EOL;
             echo "Steps Mapped Videos: ", $this->pageStructuredData->getTotalVideos() , PHP_EOL;
-            echo PHP_EOL, json_encode($this->stepsVideos ?? [], JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES) , PHP_EOL , PHP_EOL;
+            //echo PHP_EOL, json_encode($this->stepsVideos ?? [], JSON_PRETTY_PRINT + JSON_UNESCAPED_SLASHES) , PHP_EOL , PHP_EOL;
 
             echo "Other Videos: ", count($this->otherVideos ?? []) , PHP_EOL;
-            echo implode("\n", $this->otherVideos ?? []) , PHP_EOL , PHP_EOL;
+            //echo implode("\n", $this->otherVideos ?? []) , PHP_EOL , PHP_EOL;
 
             echo "Steps Type: ", $this->getStepsType(), PHP_EOL;
-            $steps = collect($this->pageStructuredData->getAllSteps() ?? []);
-            $steps = only_fields($steps, ['text', 'videoUrl', 'overallStepNumber']);
-            echo implode("\n", $steps->toArray()) , PHP_EOL;
+            //$steps = collect($this->pageStructuredData->getAllSteps() ?? []);
+            //$steps = only_fields($steps, ['text', 'videoUrl', 'overallStepNumber']);
+            //echo implode("\n", $steps->toArray()) , PHP_EOL;
         }
+
+        return;
 
         //\File::put(storage_path("test-ld.json"), json_encode($scripts->first(), JSON_PRETTY_PRINT));
         $reader = new JsonLdReader();
         $items = $reader->read($this->domCrawler->getNode(0)->ownerDocument, $this->sourceUrl);
         //print_r($items);
+
 
         foreach ($items as $item) {
             $types = implode(',', $item->getTypes());
@@ -216,6 +220,19 @@ class WikiHowArticleDetail extends ArticleDetail
 
         $this->articleDescription= $desc;
 
+    }
+
+    private function getClearedArticleTitle() : string {
+        $title = $this->pageStructuredData->getArticle()?->name ?? '';
+        $title = str_replace([' - wikiHow', '', ' | wikiHow', ' wikiHow', 'wikiHow', '  '], '', $title);
+
+        return $title;
+    }
+
+    private function determineIsArticleFeatured() {
+        $this->isFeaturedArticle = str_contains($this->htmlSource, "Category:Featured Articles");
+        if ($this->isFeaturedArticle)
+            $a=1;
     }
 
 }

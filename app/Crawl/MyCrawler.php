@@ -41,7 +41,7 @@ class MyCrawler extends Crawler
         $time = new Carbon();
         $request = request();
 
-        $maxDepth = $request->has('just_requested_url') ? 0 : ifProduction(2, 3);
+        $maxDepth = $request->has('just_requested_url') ? 0 : ifProduction(2, 6);
 
         $options = $request->has('cookies') ? ['cookies'=>$request->get('cookies')]  : [];
         $options['connect_timeout']= ifProduction(3, 16);
@@ -54,11 +54,11 @@ class MyCrawler extends Crawler
             ->setConcurrency(2)
             ->setMaximumDepth($maxDepth)
             ->setCrawlProfile($myFilter)
-            ->setUserAgent('Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:103.0) Gecko/20100101 Firefox/103.0')
-            ->setDelayBetweenRequests(ifProduction(2000, 7800))
+            ->setUserAgent('Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0')
+            ->setDelayBetweenRequests(ifProduction(2000, 6800))
             ->ignoreRobots()
             ->enableBalancer()
-            ->setTotalCrawlLimit(\request()->get('maxcrawls', ifProduction(100, 5000)));
+            ->setTotalCrawlLimit(\request()->get('maxcrawls', ifProduction(100, 6000)));
 
         // manually add urls to queue
         if(count($addToQueueUrls)) {
@@ -98,10 +98,10 @@ class MyCrawler extends Crawler
             $diff =sprintf("%s seconds.",$diff);
 
 
-        Tools::echo(sprintf("<br>\n%s article saved, %s total urls found, %s urls was valid, %s urls was article, %s url was sub url, and <strong>%s</strong> urls crawled<br>\n
-<p style='direction: rtl;text-align: left'>total crawl time %s</p>", Observer::$articleSaved,
+        Tools::echo(sprintf("<br>\n%s article saved, %s total urls found, %s urls was valid, %s urls was article, %s errors, and %s urls crawled<br>\n
+<p style='direction: rtl;text-align: left'>total crawl time \n%s\n</p>", Observer::$articleSaved,
             Filter_Crawl::$totalCount, Filter_Crawl::$validCount, Filter_Crawl::$validVideoCount,
-            Filter_Crawl::$validSubUrlCount, Observer::$count, $diff));
+            Observer::$errorsCount, Observer::$count, $diff));
 
         if($request->has('is_google_search'))
             Log::info(sprintf("google_search_result: %s article saved, %s urls was article, and %s urls crawled for '%s' in %s",
@@ -134,7 +134,7 @@ class MyCrawler extends Crawler
         Filter_Crawl::$validVideoCount = 0;
         Filter_Crawl::$validSubUrlCount = 0;
         Observer::$articleSaved = 0;
-        Observer::$videoCount = 0;
+        Observer::$articleCount = 0;
         Observer::$count = 0;
         MyCrawler::$CRAWLED_ARTICLES = [];
     }

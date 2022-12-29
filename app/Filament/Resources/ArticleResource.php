@@ -3,11 +3,11 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Pages;
-use App\Filament\Resources\ArticleResource\RelationManagers;
 use App\Forms\Components\AdvanceTextArea;
 use App\Forms\Components\AdvanceTextInput;
 use App\Forms\Components\DisplayImage;
 use App\Models\Article;
+use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Components\Repeater;
 use Filament\Resources\Form;
@@ -16,7 +16,10 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
+use phpDocumentor\Reflection\Types\This;
+use Str;
 
 class ArticleResource extends Resource
 {
@@ -24,19 +27,26 @@ class ArticleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-collection';
 
+    public static function getEloquentQuery(): Builder {
+        if(str_contains(Route::getCurrentRoute()->getName(), ".edit"))
+            return parent::getEloquentQuery();
+
+        return static::getModel()::query()->where('is_skipped', 0);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
 
-                DisplayImage::make('image_url')->setDisplayWidth(300)->label("")
+                DisplayImage::make('image_url')->setDisplayWidth(500)->label("")
                     ->setDisplayAlign('center')->columnSpan(2),
                 AdvanceTextInput::make('title_fa')->label("عنوان مقاله")
                     ->maxLength(300)->columnSpan(2)
                     ->hint(fn($record) => getLeftOrderHtmlString($record?->title_en)),
                 AdvanceTextarea::make('description_fa')->label("توضیحات مقاله")
                     ->required()->columnSpan(['default' => 2,'lg' => 1])
-                    ->maxLength(300)
+                    ->maxLength(500)
                     ->hint(fn($record) => getLeftOrderHtmlString($record?->description_en)),
                 AdvanceTextarea::make('tips_fa')->columnSpan(['default' => 2,'lg' => 1])
                     ->maxLength(500)->label("نکات")
@@ -65,14 +75,23 @@ class ArticleResource extends Resource
                             ->label("مراحل")
                             ->columnSpan(2)
                             ->relationship()
+                            ->orderable('order')
+                            ->mutateRelationshipDataBeforeCreateUsing(function ($data, $record){
+                                // to save a step we also need article id foreign key, so we will add it here
+                                $articleId = $record->article_id ?? $record?->article->id;
+                                $data['article_id'] = $articleId;
+                                return $data;
+                            })
                             ->collapsed()
                             ->itemLabel(fn (array $state): ?string => 'مرحله ' . ($state['order'] ?? null))
-                            ->disableItemDeletion()->disableItemCreation()->disableItemMovement()
+                            //->disableItemDeletion()->disableItemCreation()->disableItemMovement()
                             ->schema([
 //                                Forms\Components\TextInput::make('order')->label("مرحله")
 //                                    ->required()->disabled()->columnSpan(1),
-                                DisplayImage::make('image_url')->setDisplayWidth(300)->label(""),
+                                DisplayImage::make('image_url')->setDisplayAlign('center')
+                                                               ->setDisplayWidth(400)->label(""),
                                 AdvanceTextarea::make('content_fa')->label("توضیحات")->required()
+                                    ->rows(fn($record) => static::getRowsCountOfTextArea($record->content_fa))
                                     ->hint(fn($record) => getLeftOrderHtmlString($record?->content_en)),
                             ])
                     ])
@@ -90,6 +109,14 @@ class ArticleResource extends Resource
             ]);
     }
 
+    private static function getRowsCountOfTextArea($content) : int {
+        $contentLen = Str::length($content);
+        $rows = round($contentLen / 150);
+        $rows = max(2, $rows);
+        $rows = min(10, $rows);
+        return $rows;
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -97,24 +124,49 @@ class ArticleResource extends Resource
                 Tables\Columns\ImageColumn::make('image_url')->width('140px')->height('80px')->label("Poster"),
                 Tables\Columns\TextColumn::make('title_fa')->limit(50, "")->searchable()->sortable()
                     ->url(fn ($record): string => $record->getSourceSiteUrl()),
+                Tables\Columns\IconColumn::make('is_skipped')->boolean()->sortable()
+                                         ->label("نادیده گرفتن")
+                                         ->action(function($record) {
+                                             $record->is_skipped = $record->is_skipped > 0 ? 0 : 1;
+                                             $record->save();
+                                             Filament::notify('success', 'تغییر انجام شد.');
+                                         }),
                 Tables\Columns\TextColumn::make('categories')->wrap()
                     ->formatStateUsing(function ($state) {
                         return $state?->pluck('name_fa')->join(', ');
                     })
                     ,
-                Tables\Columns\TextColumn::make('total_sections')->sortable(),
-                Tables\Columns\TextColumn::make('total_steps')->sortable(),
-                Tables\Columns\IconColumn::make('processors')
+                Tables\Columns\TextColumn::make('total_sections')->sortable()->label('Sections'),
+                Tables\Columns\TextColumn::make('total_steps')->sortable()->label('Steps'),
+                Tables\Columns\IconColumn::make('info')
                     ->options(['heroicon-o-light-bulb'])
                     ->label("اطلاعات")->colors(['primary'])
+                    ->url(fn($record) => $record?->getArticleDisplayUrl(), true)
                     ->tooltip(fn($record) => $record?->getBriefInfoOfArticle()),
                 Tables\Columns\TextColumn::make('description_fa')->limit(50)->wrap()->searchable()->visible(false),
                 Tables\Columns\TextColumn::make('tips_fa')->limit(50)->wrap()->searchable()->visible(false),
                 Tables\Columns\TextColumn::make('warnings_fa')->limit(50)->wrap()->searchable()->visible(false),
-                Tables\Columns\TextColumn::make('steps_type')->searchable()->sortable(),
+                //Tables\Columns\TextColumn::make('steps_type')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('source_views')
                     ->formatStateUsing(fn ($state) => number_format($state))->sortable(),
                 Tables\Columns\IconColumn::make('is_featured')->boolean()->sortable(),
+                Tables\Columns\IconColumn::make('is_translate_designated')->boolean()->sortable()
+                    ->label("منتخب ترجمه")
+                    ->action(function($record) {
+                        $record->is_translate_designated = $record->is_translate_designated > 0 ? 0 : 1;
+                        $record->save();
+                        Filament::notify('success', 'تغییر انجام شد.');
+                    }),
+
+                Tables\Columns\IconColumn::make('published_at')->sortable()
+                    ->label("انتشار")
+                    ->action(function($record) {
+                        $record->published_at = empty($record->published_at) ? now() : null;
+                        $record->save();
+                        Filament::notify('success', 'تغییر انجام شد.');
+                    })
+                    ->options(fn($record) => empty($record->published_at) ? ['heroicon-o-x-circle'] : ['heroicon-o-check-circle'])
+                    ->colors(fn($record) => empty($record->published_at) ? ['danger'] : ['success']),
 //                Tables\Columns\TextColumn::make('published_at')->dateTime()->sortable(),
                 Tables\Columns\TextColumn::make('last_crawled_at')->wrap()->sortable()
                     ->tooltip(fn($record) => getDateString($record?->last_crawled_at, "jalali"))

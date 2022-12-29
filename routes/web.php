@@ -1,7 +1,9 @@
 <?php
 
 use App\Crawl\MyCrawler;
+use App\Http\Controllers\ArticleController;
 use App\Jobs\ProcessCrawledUrl;
+use App\Models\Category;
 use Google\Cloud\Translate\V2\TranslateClient;
 use Illuminate\Support\Facades\Route;
 
@@ -9,7 +11,34 @@ Route::get('/', function () {
     return view('dashboard');
 });
 
+// asset routes to just allow us make route urls in the app
+Route::post('/static/images/{file}', function () {
+    abort(403);
+})->name('static.images');
+
+Route::post('/static/videos/{file}', function () {
+    abort(403);
+})->name('static.videos');
+
+
+Route::get('/article/{article}', [ArticleController::class, 'display'])->name('article-display');
+
 Route::get('/test', function () {
+    $article = \App\Models\Article::inRandomOrder()->whereId(35)->first();
+
+    $translator = new \App\Translate\TranslateDesignatedArticles();
+    $translator->start();
+    dd($translator->getStatusText());
+
+    $cat = Category::whereId(133)->first()->getAllSubCategories('name_fa');
+    $all = Category::getAllCategoriesAndSubCategories([88], 'name_fa');
+    dd($cat->pluck('name_fa'));
+
+    $asset = new \App\Article\AssetsManager\AssetsManager($article);
+    $asset->makeAllAssetsLocal();
+    dd($asset);
+    exit;
+
     //$url = \App\Models\Url::whereId(69)->first()->getFullUrl();
     //$validator = new \App\Article\Url\WikiHowArticleUrl();
     //$validator->isIgnoredPath(new \GuzzleHttp\Psr7\Uri($url));
@@ -18,12 +47,12 @@ Route::get('/test', function () {
 //    $t->translate('this book was aesome');
 //    exit;
 
-    $queueUrls = extractFailedCrawlUrls(0);
-    MyCrawler::doCrawl("https://www.wikihow.com/Category:Internet", $queueUrls);
-exit;
-    for ($i=1380 ; $i<=3000; $i++) {
+    //$queueUrls = extractFailedCrawlUrls(0);
+    //MyCrawler::doCrawl("https://www.wikihow.com/Category:Internet", $queueUrls);
+//exit;
+    for ($i=1 ; $i<=99999; $i++) {
 
-        $url = \App\Models\Url::whereId($i)->first();
+        $url = \App\Article\AssetsManager\Url::whereId($i)->first();
 
         if(!empty($url)){
             echo '--- url id: ' , $url->id, "<br>\n";
@@ -37,41 +66,6 @@ exit;
 //    $seeder = new \Database\Seeders\DatabaseSeeder();
 //    $seeder->run();
 });
-
-function testTranslate(){
-    $translate = new TranslateClient([
-        'keyFile' => json_decode(file_get_contents('c:\Users\Admin\AppData\Roaming\gcloud\application_default_credentials.json'), true)
-    ]);
-
-// Translate text from english to french.
-    $result = $translate->translate('Hello world!', [
-        'target' => 'fr'
-    ]);
-
-    echo $result['text'] . "\n";
-
-// Detect the language of a string.
-    $result = $translate->detectLanguage('Greetings from Michigan!');
-
-    echo $result['languageCode'] . "\n";
-
-// Get the languages supported for translation specifically for your target language.
-    $languages = $translate->localizedLanguages([
-        'target' => 'en'
-    ]);
-
-    foreach ($languages as $language) {
-        echo $language['name'] . "\n";
-        echo $language['code'] . "\n";
-    }
-
-// Get all languages supported for translation.
-    $languages = $translate->languages();
-
-    foreach ($languages as $language) {
-        echo $language . "\n";
-    }
-}
 
 function extractFailedCrawlUrls($ago = 4){
     $foundUrls = [];
@@ -118,7 +112,7 @@ DB::listen(function ($query) {
         return;
     }
 
-    if (request()->has('log_queries') || $query->time > 1500) {
+    if (request()->has('log_queries') || $query->time > 500) {
 
         $GLOBALS['auth_checking'] = true;
         $user                     = auth()->check() ? 'user: ' . auth()->user()->name . ', ' : '';

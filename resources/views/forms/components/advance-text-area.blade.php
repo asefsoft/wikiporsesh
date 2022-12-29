@@ -12,14 +12,5 @@
     :required="$isRequired()"
     :state-path="$getStatePath()"
 >
-    <div x-data="{ state: $wire.entangle('{{ $getStatePath() }}').defer }">
-        <x-forms::button
-            :wire:click="'dispatchFormEvent(\'advanced-text-input::doTranslate\', \'' . $getStatePath() . '\')'"
-            size="sm"
-            type="button"
-            style="position: relative; float: inline-end; margin-right: 12px; margin-bottom: 5px;"
-        >
-            ترجمه
-        </x-forms::button>
-    </div>
+    <x-translate-button :getStatePath="$getStatePath"/>
 </x-dynamic-component>

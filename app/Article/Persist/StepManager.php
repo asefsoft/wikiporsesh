@@ -37,9 +37,12 @@ class StepManager {
 
     private function updateOrCreateStep(SD_HowToStep $givenArticleStep, int $stepOrder) : void {
         $stepData = [
-            'article_id' => $this->articleSection->article->id, 'section_id' => $this->articleSection->id,
-            'order'      => $stepOrder, 'content_en' => $givenArticleStep->text,
-            'image_url'  => $givenArticleStep->image, 'video_url' => $givenArticleStep->videoUrl,
+            'article_id' => $this->articleSection->article->id,
+            'section_id' => $this->articleSection->id,
+            'order'      => $stepOrder,
+            'content_en' => $givenArticleStep->text,
+            'image_url'  => $givenArticleStep->image,
+            'video_url' => $givenArticleStep->videoUrl,
             'overall_step_order' => $givenArticleStep->overallStepNumber
         ];
 

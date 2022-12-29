@@ -27,5 +27,7 @@ class ProcessCrawledUrl implements ShouldQueue
     {
         $processor = new ProcessArticleDetail($this->crawledUrl, $this->force);
         $processor->process();
+
+        unset($processor);
     }
 }

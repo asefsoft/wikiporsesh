@@ -45,7 +45,7 @@ abstract class ArticleDetail {
 
     // in some cases we might invalidate some articles
     protected bool $isValidArticle = true;
-    protected bool $isFeaturedArticle = true;
+    protected bool $isFeaturedArticle = false;
 
     protected string $validateErrorMessage = "";
 

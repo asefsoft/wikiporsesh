@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "cssnano": "^5.1.14",
-        "daisyui": "^2.20.0"
+        "daisyui": "^2.20.0",
+        "jquery": "^3.6.3"
     }
 }
