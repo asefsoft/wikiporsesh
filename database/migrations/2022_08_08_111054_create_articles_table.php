@@ -25,10 +25,10 @@ return new class extends Migration
             $table->string('title_en',300);
             $table->string('description_fa',500);
             $table->string('description_en',300);
-            $table->string('tips_fa',500)->nullable();
-            $table->string('tips_en',500)->nullable();
-            $table->string('warnings_en',500)->nullable();
-            $table->string('warnings_fa',500)->nullable();
+            $table->string('tips_fa',1000)->nullable();
+            $table->string('tips_en',1000)->nullable();
+            $table->string('warnings_en',1000)->nullable();
+            $table->string('warnings_fa',1000)->nullable();
             $table->string('image_url',300)->nullable();
             $table->string('steps_type', 30)->index();
             $table->integer('views')->default(0)->index();

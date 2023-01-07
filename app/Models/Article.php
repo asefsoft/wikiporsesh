@@ -71,6 +71,33 @@ class Article extends Model implements HasAssetTracker
         $this->save();
     }
 
+    public function getCategoryLinks($class = '', $limit = 1): string {
+        $links = '';
+
+        foreach ($this->categories as $index => $category) {
+
+            $links .= sprintf("<a href='%s' class='%s'>%s</a>\n",
+                route('category-display', $category->slug), $class, $category->name_fa
+            );
+
+            if($index +1 >= $limit)
+                break;
+        }
+
+        return $links;
+    }
+
+    public function getCategoriesBreadcrumb(): array {
+        $bread = [];
+
+        foreach ($this->categories as $category) {
+            $bread[] = $category->getAllParentCategories('Object');
+        }
+
+        return $bread;
+    }
+
+
     public function getArticleDisplayUrl() : string {
         return route('article-display', $this->slug);
     }

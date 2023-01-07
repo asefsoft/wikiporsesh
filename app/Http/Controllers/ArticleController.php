@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Article\AssetsManager\AssetsManager;
 use App\Models\Article;
-use Illuminate\Http\Request;
+use App\Translate\ArticleAutoTranslator;
 
 class ArticleController extends Controller
 {
     public function display(Article $article) {
 
-        $assetManager = isAdmin() ? new \App\Article\AssetsManager\AssetsManager($article): null;
+        $assetManager = isAdmin() ? new AssetsManager($article) : null;
 
-        return view('article.article-view', compact('article', 'assetManager'));
+        $categoriesBreadcrumb = $article->getCategoriesBreadcrumb();
 
-        dd($article->toArray(), $article->relationsToArray());
+        return view('article.article-view', compact('article', 'assetManager', 'categoriesBreadcrumb'));
 
     }
+
 }

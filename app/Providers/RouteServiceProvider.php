@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Article;
+use App\Models\Category;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -40,8 +41,19 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('article', function ($value) {
 
+            $targetField = is_numeric($value) ? 'id' : "slug";
+
             $article = Article::with(['sections.steps','categories','videos'])
-                              ->where('slug', $value)->first();
+                              ->where($targetField, $value)->first();
+
+            return $article ?? abort(404);
+        });
+
+        Route::bind('category', function ($value) {
+
+            $targetField = is_numeric($value) ? 'id' : "slug";
+
+            $article = Category::where($targetField, $value)->first();
 
             return $article ?? abort(404);
         });

@@ -2,7 +2,9 @@
 
 use App\Crawl\MyCrawler;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CategoryController;
 use App\Jobs\ProcessCrawledUrl;
+use App\Models\Article;
 use App\Models\Category;
 use Google\Cloud\Translate\V2\TranslateClient;
 use Illuminate\Support\Facades\Route;
@@ -22,9 +24,25 @@ Route::post('/static/videos/{file}', function () {
 
 
 Route::get('/article/{article}', [ArticleController::class, 'display'])->name('article-display');
+Route::get('/category/{category}', [CategoryController::class, 'display'])->name('category-display');
+
+Route::group(['middleware' => ['auth', 'can:manage']], function () {
+    Route::get('/actions/translate/{article}', [ArticleController::class, 'translate'])->name('translate-article');
+    Route::get('/actions/translate-designate/{article}', [ArticleController::class, 'translate_designate'])->name('translate-designate-article');
+    Route::get('/actions/translate-designate/{article}', [ArticleController::class, 'translate_designate'])->name('translate-designate-article');
+});
 
 Route::get('/test', function () {
+
+    $collection = new \App\View\ArticleCollectionData("test articles", Article::simplePaginate(12));
+    return view('article.article-list', compact(['collection']));
     $article = \App\Models\Article::inRandomOrder()->whereId(35)->first();
+
+    $asset = new \App\Article\AssetsManager\AssetsManager($article);
+    $asset->makeAllAssetsLocal();
+    dd($asset);
+    exit;
+
 
     $translator = new \App\Translate\TranslateDesignatedArticles();
     $translator->start();
@@ -34,10 +52,6 @@ Route::get('/test', function () {
     $all = Category::getAllCategoriesAndSubCategories([88], 'name_fa');
     dd($cat->pluck('name_fa'));
 
-    $asset = new \App\Article\AssetsManager\AssetsManager($article);
-    $asset->makeAllAssetsLocal();
-    dd($asset);
-    exit;
 
     //$url = \App\Models\Url::whereId(69)->first()->getFullUrl();
     //$validator = new \App\Article\Url\WikiHowArticleUrl();
@@ -67,7 +81,7 @@ Route::get('/test', function () {
 //    $seeder->run();
 });
 
-function extractFailedCrawlUrls($ago = 4){
+function extractFailedAndPendingCrawlUrls($ago = 2){
     $foundUrls = [];
     for($ago; $ago >= 0; $ago--) {
         $filePath = storage_path("logs/crawl_done-" . now()->subDays($ago)->format("Y-m-d") . ".log");
@@ -77,6 +91,14 @@ function extractFailedCrawlUrls($ago = 4){
             $foundUrls = array_merge($foundUrls, $urls[1] ?? []);
         }
     }
+
+    // pending urls
+    $filePath = storage_path("logs/pending_urls.json");
+    if(file_exists($filePath)) {
+        $pendingUrls = json_decode(File::get($filePath), true);
+        $foundUrls = array_merge($foundUrls, $pendingUrls ?? []);
+    }
+
     $foundUrls = array_unique($foundUrls);
 //    dump($foundUrls);
     return $foundUrls;

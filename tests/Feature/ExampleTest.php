@@ -16,8 +16,8 @@ class ExampleTest extends TestCase
     public function test_the_application_returns_a_successful_response()
     {
 
-        $queueUrls = extractFailedCrawlUrls(1);
-        MyCrawler::doCrawl("https://www.wikihow.com/Category:Cats", $queueUrls);
+        $queueUrls = extractFailedAndPendingCrawlUrls(0);
+        MyCrawler::doCrawl("https://www.wikihow.com/Category:Psychological-Health", $queueUrls);
 
 //        $response = $this->get('/test');
 //

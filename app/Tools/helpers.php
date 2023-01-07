@@ -16,6 +16,11 @@ function logMe($fileName, $log, $addDateToLog = true, $addDateToFileName = true)
     }
 }
 
+function flashBanner($message, $type = 'success') {
+    request()->session()->flash('flash.banner', $message);
+    request()->session()->flash('flash.bannerStyle', $type);
+}
+
 function isAdmin(): bool {
     static $isAdmin;
 

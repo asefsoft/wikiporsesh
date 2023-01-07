@@ -25,11 +25,38 @@ class ArticleAutoTranslator {
     }
 
     public function start() {
+        $this->translateArticleSectionsNames();
         $this->translateArticleFields();
         $this->translateSteps();
     }
 
-    // translate article's title, desc ...
+    // sections titles
+    private function translateArticleSectionsNames() {
+        $sections = $this->article->sections;
+        foreach ($sections as $section) {
+            // should translate?
+            $textToBeTranslate = $section->title_fa;
+            if(!empty($textToBeTranslate) && $textToBeTranslate == $section->title_en) {
+                // do translate
+                if ($this->translateText($textToBeTranslate)) {
+
+                    $section->title_fa = $textToBeTranslate;
+                    $section->save();
+
+                    logError(sprintf("article %s section `%s` `%s` is auto translated.",
+                        $this->article->id, $section->id, $section->title_en
+                    ), 'info');
+
+                    // delay
+                    sleep($this->getSleepTime());
+                }
+                else {
+                    $this->failedTranslate ++;
+                }
+        }   }
+    }
+
+        // translate article's title, desc ...
     private function translateArticleFields() {
         $fields = ['title', 'description', 'tips', 'warnings'];
 
@@ -62,13 +89,13 @@ class ArticleAutoTranslator {
         $enText = $this->article->getAttribute($field . "_en");
         $faText = $this->article->getAttribute($field . "_fa");
         $textToBeTranslate = $enText;
-        return !empty($enText) != "" && $enText == $faText;
+        return !empty($enText)  && $enText == $faText;
     }
 
     private function translateSteps() {
 
         // get not translated steps of article
-        $this->steps = $this->article->steps()->notAutoTranslated()->get();
+        $this->steps = $this->article->steps()->notAutoTranslated()->orderBy('overall_step_order')->get();
         $this->stepsToBeTranslate = count($this->steps);
 
         // do translate all steps

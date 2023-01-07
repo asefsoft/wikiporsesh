@@ -41,7 +41,7 @@ class Filter_Crawl extends CrawlProfile {
         $isValidArticleUrl = $validator->isValidArticleUrl();
         $isMainPageUrl = $validator->isMainUrl();
         $isUrlIgnored = $validator->isIgnoredPath();
-        $isCategoryUrl = $validator->isCategoryUrl() && rand(1,100) < 20;// todo:
+        $isCategoryUrl = $validator->isCategoryUrl() && (rand(1,100) < 20 || Filter_Crawl::$totalShould < 6);// todo:
         $isExtraValidPath = $validator->isExtraValidPath();
 
         $video = null;
@@ -89,6 +89,8 @@ class Filter_Crawl extends CrawlProfile {
 
         if($should)
             Filter_Crawl::$totalShould++;
+
+        unset($validator);
 
         return $should;
 

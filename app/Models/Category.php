@@ -29,22 +29,40 @@ class Category extends Model
                     ->with('childrenRecursive');
     }
 
-    public function getAllSubCategories(string $field = 'id') {
-        $cat = $this->with('childrenRecursive')->first();//->pluck($field)->unique();
-        $all = self::getAllNestedRelations($cat, $field);
+    public function parentsRecursive() : Relation {
+        return $this->hasMany(Category::class, 'id', 'parent_category_id')
+                    ->with('parentsRecursive');
+    }
+
+    public function getCategoryUrl(): string {
+        return route('category-display', $this->slug);
+    }
+
+    public function getAllSubCategories(string $field = 'id'): array {
+        $cat = $this->load('childrenRecursive');
+        $all = self::getAllNestedRelations($cat, $field, 'childrenRecursive');
         return $all;
     }
 
+    public function getAllParentCategories(string $field = 'id'): array {
+        $cat = $this->load('parentsRecursive');
+        $all = self::getAllNestedRelations($cat, $field, 'parentsRecursive');
+        return array_reverse($all); // parents should be reverse
+    }
+
     // get all child relations on a category
-    public static function getAllNestedRelations(Category $category, string $field = 'id', $outputFormat = 'simple') : array {
-        $fieldValue = $category->getAttribute($field);
+    public static function getAllNestedRelations(Category $category, string $field = 'id',
+                             string $relationName = 'childrenRecursive', $outputFormat = 'simple') : array {
+
+        // return a field value of whole category object?
+        $fieldValue = $field == "Object" ? $category : $category->getAttribute($field);
         $all       = [$fieldValue];
 
-        $hasRelation = $category->childrenRecursive && count($category->childrenRecursive) > 0;
+        $hasRelation = $category->{$relationName} && count($category->{$relationName}) > 0;
 
         if($hasRelation) {
-            foreach ($category->childrenRecursive as $childCategory) {
-                $nestedChild = static::getAllNestedRelations($childCategory, $field, $outputFormat);
+            foreach ($category->{$relationName} as $childCategory) {
+                $nestedChild = static::getAllNestedRelations($childCategory, $field, $relationName, $outputFormat);
                 if(count($nestedChild))
                     $all = array_merge($all,$nestedChild);
             }

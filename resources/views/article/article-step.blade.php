@@ -1,4 +1,4 @@
-{{-- Step Image--}}
+{{-- Step Image & Video--}}
 @if($step->hasVideo())
     <video  controls controlslist="nofullscreen nodownload noremoteplayback noplaybackspeed"
             preload='metadata' fluid="true" width="100%"
@@ -10,7 +10,9 @@
     </video>
 {{--    <img src="{{ $step->image_url }}" alt="step image" width="100%">--}}
 @elseif($step->hasImage())
-    <img src="{{ $step->image_url }}" alt="step image" width="100%">
+    <figure class="flex justify-center">
+        <img src="{{ $step->image_url }}" alt="step image" width="100%" class="max-w-[500px]">
+    </figure>
 @endif()
 
 {{-- Step number--}}

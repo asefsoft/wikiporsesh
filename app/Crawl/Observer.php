@@ -9,6 +9,7 @@ use App\Models\Url;
 use App\Tools\Tools;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Uri;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -23,7 +24,7 @@ class Observer extends MyCrawlObserver {
     static int $willCrawl = 0;
     static int $errorsCount = 0;
 
-    protected $crawler = null;
+    protected MyCrawler|null $crawler = null;
 
     public function crawled(UriInterface $url, ResponseInterface $response, ?UriInterface $foundOnUrl = null) : void {
 
@@ -49,6 +50,7 @@ class Observer extends MyCrawlObserver {
         // save url and its content into db
         $content = $response->getBody();
         $crawledUrlDB  = Url::saveNewUrl($url, $content,'', $isValidArticleUrl?1:0);
+        unset($urlValidator);
 
         Observer::$count ++;
 
@@ -58,15 +60,29 @@ class Observer extends MyCrawlObserver {
             Observer::$articleSaved++;
         }
 
-        logMe('crawl_done', sprintf("%s %s - %s%s",
+        $queue = $this->crawler->getCrawlQueue();
+        $urlsC = count($queue->getUrls());
+        $pendC = count($queue->getPendingUrls());
+        $doneC = $urlsC - $pendC;
+        $percent = (int)(($doneC/$urlsC)*100);
+        $queueStat = sprintf('total: %s, pending: %s, %s%% done', $urlsC, $pendC, $percent);
+        logMe('crawl_done', sprintf("%s %s - %s%s, %s",
             self::$articleSaved,
             $url,
             number_format_short(Str::length($content)),
-            $isValidArticleUrl ? ' IS-ARTICLE' : ''
+            $isValidArticleUrl ? ' IS-ARTICLE' : '',
+            $queueStat
         ));
+
+         File::put(storage_path() . "/logs/pending_urls.json",
+             json_encode(collect($queue->getPendingUrls())->pluck('url')->toArray(), JSON_UNESCAPED_SLASHES + JSON_PRETTY_PRINT));
+
 
         Tools::echo(sprintf("<p>%s article saved, %s crawled: %s, url was crawled: %s times</p>",
             Observer::$articleSaved, Observer::$count, Str::limit(urldecode($url), 70), $crawledUrlDB->total_crawled));
+
+        unset($crawledUrlDB);
+
 
     }
 

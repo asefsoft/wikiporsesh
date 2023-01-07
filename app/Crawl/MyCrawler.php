@@ -51,11 +51,11 @@ class MyCrawler extends Crawler
         $crawler = MyCrawler::create($options)
             ->setParseableMimeTypes(['text/html', 'text/plain'])
             ->setCrawlObserver($myobs)
-            ->setConcurrency(2)
+            ->setConcurrency(1)
             ->setMaximumDepth($maxDepth)
             ->setCrawlProfile($myFilter)
             ->setUserAgent('Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0')
-            ->setDelayBetweenRequests(ifProduction(2000, 6800))
+            ->setDelayBetweenRequests(ifProduction(2000, 7800))
             ->ignoreRobots()
             ->enableBalancer()
             ->setTotalCrawlLimit(\request()->get('maxcrawls', ifProduction(100, 6000)));
@@ -171,6 +171,8 @@ class MyCrawler extends Crawler
             $promise = $pool->promise();
 
             $promise->wait();
+
+            unset($pool);
         }
     }
 
