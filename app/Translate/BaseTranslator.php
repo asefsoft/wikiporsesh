@@ -36,6 +36,7 @@ abstract class BaseTranslator
         return $this->targetUrl;
     }
 
+
     protected function sendRequest($postParams) : bool {
 
         try {
@@ -45,7 +46,7 @@ abstract class BaseTranslator
                 'timeout' => 10,
                 'verify' => false,
                 'headers' => [
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0',
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/105.0',
                     'Content-Type' => 'application/x-www-form-urlencoded'
                 ],
                 RequestOptions::FORM_PARAMS => $postParams // post params

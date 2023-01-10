@@ -55,7 +55,7 @@ class MyCrawler extends Crawler
             ->setMaximumDepth($maxDepth)
             ->setCrawlProfile($myFilter)
             ->setUserAgent('Mozilla/5.0 (Windows NT 11.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0')
-            ->setDelayBetweenRequests(ifProduction(2000, 7800))
+            ->setDelayBetweenRequests(ifProduction(2000, 8800))
             ->ignoreRobots()
             ->enableBalancer()
             ->setTotalCrawlLimit(\request()->get('maxcrawls', ifProduction(100, 6000)));
@@ -99,9 +99,9 @@ class MyCrawler extends Crawler
 
 
         Tools::echo(sprintf("<br>\n%s article saved, %s total urls found, %s urls was valid, %s urls was article, %s errors, and %s urls crawled<br>\n
-<p style='direction: rtl;text-align: left'>total crawl time \n%s\n</p>", Observer::$articleSaved,
+<p style='direction: rtl;text-align: left'>total crawl time \n%s\ndate: %s</p>", Observer::$articleSaved,
             Filter_Crawl::$totalCount, Filter_Crawl::$validCount, Filter_Crawl::$validVideoCount,
-            Observer::$errorsCount, Observer::$count, $diff));
+            Observer::$errorsCount, Observer::$count, $diff, now()));
 
         if($request->has('is_google_search'))
             Log::info(sprintf("google_search_result: %s article saved, %s urls was article, and %s urls crawled for '%s' in %s",

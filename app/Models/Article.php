@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Article\AssetsManager\AssetTrackerTrait;
 use App\Article\AssetsManager\HasAssetTracker;
+use App\Article\FilterByQueryString;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  */
 class Article extends Model implements HasAssetTracker
 {
-    use HasFactory, AssetTrackerTrait;
+    use HasFactory, AssetTrackerTrait, FilterByQueryString;
 
     public $guarded = [];
 
@@ -25,6 +26,17 @@ class Article extends Model implements HasAssetTracker
         'published_at',
         'last_crawled_at'
     ];
+
+    protected static function boot() {
+        parent::boot();
+
+        // todo: just admin?
+        if(isAdmin()) {
+            static::addGlobalScope('filters', function (\Illuminate\Database\Eloquent\Builder $builder) {
+                self::ApplyFilters($builder);
+            });
+        }
+    }
 
     public function sections() : HasMany {
         return $this->hasMany(ArticleSection::class)->orderBy('order');
@@ -97,7 +109,9 @@ class Article extends Model implements HasAssetTracker
         return $bread;
     }
 
-
+    public function getViewsHumanReadable(): int|string {
+        return number_format_short($this->source_views,true, true );
+    }
     public function getArticleDisplayUrl() : string {
         return route('article-display', $this->slug);
     }

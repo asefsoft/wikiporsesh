@@ -18,7 +18,7 @@ class ArticleActionsController extends Controller
 
     }
 
-    public function translate_designate(Article $article) {
+    public function translateDesignate(Article $article) {
 
         if($article->is_translate_designated == 1) {
             $article->is_translate_designated = 0;
@@ -29,11 +29,36 @@ class ArticleActionsController extends Controller
             $message = "مقاله به لیست منتخب ترجمه اضافه شد.";
         }
 
-        $article->save();
+        $article->save(['timestamps'=>false]);
 
         flashBanner($message, 'danger');
 
         return redirect()->back();
 
+    }
+    public function skip(Article $article) {
+
+        if($article->is_skipped == 1) {
+            $article->is_skipped = 0;
+            $message = "مقاله از لیست نادیده گرفتن خارج شد.";
+        }
+        else {
+            $article->is_skipped = 1;
+            $message = "مقاله به لیست نادیده گرفتن اضافه شد.";
+        }
+
+        $article->save(['timestamps'=>false]);
+
+        flashBanner($message, 'danger');
+
+        return redirect()->back();
+
+    }
+
+    // download all assets of article to the local storage
+    public function makeAssetsLocal(Article $article) {
+        $asset = new AssetsManager($article);
+        $asset->makeAllAssetsLocal();
+        return dd($asset->getAssetStatusText(), $asset);
     }
 }

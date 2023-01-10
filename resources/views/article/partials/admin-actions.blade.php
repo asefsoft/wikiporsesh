@@ -26,9 +26,18 @@
 
         @php
             $designatedText = $article->is_translate_designated == 1 ? 'حذف از منتخب ترجمه' : 'منتخب ترجمه';
+            $skipText = $article->is_skipped == 1 ? 'حذف از نادیده گرفتن' : 'نادیده گرفتن';
         @endphp
         <x-jet-dropdown-link href="{{ route('translate-designate-article', $article->id) }}">
             {{$designatedText}}
+        </x-jet-dropdown-link>
+
+        <x-jet-dropdown-link href="{{ route('skip-article', $article->id) }}">
+            {{$skipText}}
+        </x-jet-dropdown-link>
+
+        <x-jet-dropdown-link href="{{ route('make-assets-local', $article->id) }}" target='_blank'>
+            دانلود دارایی ها
         </x-jet-dropdown-link>
 
 

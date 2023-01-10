@@ -34,6 +34,7 @@ class ManualGoogleApiTranslator extends BaseTranslator
             }
             catch (\Exception $exception) {
                 $this->wasSuccessful = false;
+                $this->errorMessage = $exception->getMessage();
             }
 
         }

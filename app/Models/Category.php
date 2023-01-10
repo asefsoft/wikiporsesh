@@ -38,6 +38,7 @@ class Category extends Model
         return route('category-display', $this->slug);
     }
 
+
     public function getAllSubCategories(string $field = 'id'): array {
         $cat = $this->load('childrenRecursive');
         $all = self::getAllNestedRelations($cat, $field, 'childrenRecursive');
@@ -52,17 +53,19 @@ class Category extends Model
 
     // get all child relations on a category
     public static function getAllNestedRelations(Category $category, string $field = 'id',
-                             string $relationName = 'childrenRecursive', $outputFormat = 'simple') : array {
+                             string $relationName = 'childrenRecursive', $outputFormat = 'simple', $currDepth = 0) : array {
 
         // return a field value of whole category object?
         $fieldValue = $field == "Object" ? $category : $category->getAttribute($field);
         $all       = [$fieldValue];
+        $category->setAttribute('depth', $currDepth);
 
         $hasRelation = $category->{$relationName} && count($category->{$relationName}) > 0;
 
         if($hasRelation) {
+            $currDepth++;
             foreach ($category->{$relationName} as $childCategory) {
-                $nestedChild = static::getAllNestedRelations($childCategory, $field, $relationName, $outputFormat);
+                $nestedChild = static::getAllNestedRelations($childCategory, $field, $relationName, $outputFormat, $currDepth);
                 if(count($nestedChild))
                     $all = array_merge($all,$nestedChild);
             }
@@ -84,11 +87,10 @@ class Category extends Model
                 ->with('childrenRecursive') //recursive
                 ->get()
                 ->map(function (Category $category) use ($field) { //extract the only field we need
-                    return self::getAllNestedRelations($category, $field);
+                    return self::getAllNestedRelations($category, $field, 'childrenRecursive');
                 })
                 ->flatten()
                 ->unique();
-
     }
 
 

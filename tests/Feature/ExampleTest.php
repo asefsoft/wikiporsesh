@@ -17,7 +17,7 @@ class ExampleTest extends TestCase
     {
 
         $queueUrls = extractFailedAndPendingCrawlUrls(0);
-        MyCrawler::doCrawl("https://www.wikihow.com/Category:Psychological-Health", $queueUrls);
+        MyCrawler::doCrawl("https://www.wikihow.com/Category:Dogs", $queueUrls);
 
 //        $response = $this->get('/test');
 //

@@ -140,7 +140,9 @@ class AssetsManager {
                 $finalUrl = $noneLocalAsset->buildLiveUrl(pathinfo($downloader->getStorePath(), PATHINFO_BASENAME));
                 $done = $noneLocalAsset->getAssetStore()->update($finalUrl);
 
-                if(!$done)
+                if($done)
+                    $this->totalLocalAssets++;
+                else
                     $allBecameLocal = false;
             }
             else {

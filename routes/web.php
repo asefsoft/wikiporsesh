@@ -1,6 +1,7 @@
 <?php
 
 use App\Crawl\MyCrawler;
+use App\Http\Controllers\ArticleActionsController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
 use App\Jobs\ProcessCrawledUrl;
@@ -9,9 +10,7 @@ use App\Models\Category;
 use Google\Cloud\Translate\V2\TranslateClient;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('dashboard');
-});
+Route::get('/', [ArticleController::class, 'index'])->name('home-index');
 
 // asset routes to just allow us make route urls in the app
 Route::post('/static/images/{file}', function () {
@@ -25,17 +24,21 @@ Route::post('/static/videos/{file}', function () {
 
 Route::get('/article/{article}', [ArticleController::class, 'display'])->name('article-display');
 Route::get('/category/{category}', [CategoryController::class, 'display'])->name('category-display');
+Route::get('/categories', [CategoryController::class, 'list'])->name('categories-list');
 
 Route::group(['middleware' => ['auth', 'can:manage']], function () {
-    Route::get('/actions/translate/{article}', [ArticleController::class, 'translate'])->name('translate-article');
-    Route::get('/actions/translate-designate/{article}', [ArticleController::class, 'translate_designate'])->name('translate-designate-article');
-    Route::get('/actions/translate-designate/{article}', [ArticleController::class, 'translate_designate'])->name('translate-designate-article');
+    Route::get('/actions/translate/{article}', [ArticleActionsController::class, 'translate'])->name('translate-article');
+    Route::get('/actions/translate-designate/{article}', [ArticleActionsController::class, 'translateDesignate'])->name('translate-designate-article');
+    Route::get('/actions/skip/{article}', [ArticleActionsController::class, 'skip'])->name('skip-article');
+    Route::get('/actions/make-assets-local/{article}', [ArticleActionsController::class, 'makeAssetsLocal'])->name('make-assets-local');
 });
 
 Route::get('/test', function () {
 
-    $collection = new \App\View\ArticleCollectionData("test articles", Article::simplePaginate(12));
-    return view('article.article-list', compact(['collection']));
+    $translator = new \App\Translate\AllCategoriesAutoTranslator();
+    $translator->start();
+    dd($translator->getStatusText(), $translator);
+
     $article = \App\Models\Article::inRandomOrder()->whereId(35)->first();
 
     $asset = new \App\Article\AssetsManager\AssetsManager($article);

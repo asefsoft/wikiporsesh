@@ -15,6 +15,15 @@
 
     {{-- Main Content of page --}}
     <section id="article-collection" class="col-span-10 px-5 py-3">
+
+        @if(!empty($categoriesBreadcrumb))
+            <div class="mb-2 mr-2">
+            @include('article.partials.categories-breadcrumb')
+            </div>
+        @endif
+
+        @include('article.partials.filter-articles')
+
         <x-article-collection :articleCollection="$collection">
 
         </x-article-collection>

@@ -1,3 +1,4 @@
+@if(count($article->sections) > 1)
 <div class="font-bold mb-2">بخش ها</div>
 <ul class="mr-4 space-y-1 grid md:grid-cols-2">
 @foreach($article->sections as $sectionIndex => $section)
@@ -6,3 +7,4 @@
     </li>
 @endforeach
 </ul>
+@endif

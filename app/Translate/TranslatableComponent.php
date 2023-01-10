@@ -31,13 +31,15 @@ trait TranslatableComponent
             ]]);
     }
 
-    protected function translateText(&$text): bool {
+    protected function translateText(&$text, &$err=''): bool {
         $translator= new ManualGoogleApiTranslator();
 
         $translator->translate($text);
 
         if($translator->wasSuccessful())
             $text = $translator->getTranslatedText();
+
+        $err= $translator->getLastError();
 
         return $translator->wasSuccessful();
     }
