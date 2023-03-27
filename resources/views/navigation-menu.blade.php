@@ -6,19 +6,20 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('home-index') }}">
-                        <x-jet-application-mark class="block h-9 w-auto" />
+{{--                        <x-jet-application-mark class="block h-9 w-auto" />--}}
+                        <img src="{{asset('static/stuff/logo1-cr.png')}}" width="36" height="36" title="WikiPorsesh" alt="logo" class="block h-9 w-auto">
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-8 sm:flex">
                     <x-jet-nav-link href="{{ route('categories-list') }}" :active="request()->routeIs('categories-list')">
                         دسته بندی
                     </x-jet-nav-link>
 
-                    <x-jet-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                        مقاله تصادفی
-                    </x-jet-nav-link>
+{{--                    <x-jet-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">--}}
+{{--                        مقاله تصادفی--}}
+{{--                    </x-jet-nav-link>--}}
                 </div>
 
             </div>

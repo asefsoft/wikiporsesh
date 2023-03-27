@@ -4,8 +4,8 @@
     <label for="search" class="sr-only">جستجو</label>
     <div class="relative rounded-md  shadow-sm ">
         <form action="{{route('articles-search')}}" method="get">
-            <input type="text" name="q"  autocomplete="off" class="placeholder-secondary-400 border-0 bo1rder b1order-secondary-300 focus:ring-primary-500
-                    focus:b1order-primary-500 form-input block w-full sm:text-sm rounded-md transition ease-in-out duration-100 focus:outline-none shadow-sm flex pl-[62px]"
+            <input type="text" name="q"  autocomplete="off" class="placeholder-secondary-400 border-0 focus:ring-primary-500
+                    form-input block w-full text-sm rounded-md transition ease-in-out duration-100 focus:outline-none shadow-sm flex pl-[62px] py-1.5"
                    placeholder="جستجو"
             >
 
