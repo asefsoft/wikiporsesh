@@ -2,15 +2,18 @@
 
 namespace App\Models;
 
+use App\Article\AssetsManager\AssetsManager;
 use App\Article\AssetsManager\AssetTrackerTrait;
 use App\Article\AssetsManager\HasAssetTracker;
 use App\Article\FilterByQueryString;
+use App\Article\RelatedArticles;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Support\Collection;
 
 /**
  * @mixin IdeHelperArticle
@@ -36,7 +39,14 @@ class Article extends Model implements HasAssetTracker
                 self::ApplyFilters($builder);
             });
         }
+        // show published articles for all users
+        else {
+            static::addGlobalScope('published', function (\Illuminate\Database\Eloquent\Builder $builder) {
+                $builder->whereNotNull('published_at');
+            });
+        }
     }
+
 
     public function sections() : HasMany {
         return $this->hasMany(ArticleSection::class)->orderBy('order');
@@ -74,7 +84,18 @@ class Article extends Model implements HasAssetTracker
                 ->where('auto_translated_percent', '<', 100);
     }
 
+    // for admin show all articles for other users only show published articles
+    public function scopeAuthorize(Builder $query) : Builder {
+        if(! isAdmin())
+            return $query->whereNotNull('published_at');
 
+        return $query;
+    }
+
+    /**
+     * Updates the percentage of steps that have been translated automatically.
+     * @param int $skippedSteps The number of steps that have been skipped (i.e. not translated automatically).
+     */
     public function updatePercentTranslated($skippedSteps = 0) {
         $totalSteps = count($this->steps);
         $totalTranslated = $this->steps()->autoTranslated()->count() + $skippedSteps;
@@ -83,6 +104,25 @@ class Article extends Model implements HasAssetTracker
         $this->save();
     }
 
+
+    public function isPublished() : bool {
+        return ! empty($this->published_at);
+    }
+
+
+    public function isTranslated() : bool {
+        return $this->is_translated || $this->auto_translated_percent >= 90;
+    }
+
+    public function isAssetsLocal() : bool {
+        $assetPercentage = (new AssetsManager($this))->getLocalAssetsPercentage();
+        return $assetPercentage == 100;
+    }
+
+
+    /**
+     * Return a string of category links
+     */
     public function getCategoryLinks($class = '', $limit = 1): string {
         $links = '';
 
@@ -98,6 +138,11 @@ class Article extends Model implements HasAssetTracker
 
         return $links;
     }
+
+    public function relatedArticles(): Collection {
+        return (new RelatedArticles($this))->getArticles();
+    }
+
 
     public function getCategoriesBreadcrumb(): array {
         $bread = [];

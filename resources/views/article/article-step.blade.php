@@ -17,7 +17,7 @@
 
 {{-- Step number--}}
 @if(! $section->isSingleStep())
-<span class="text-3xl font-bold pl-4 float-right" style="font-family: arial; font-size: 3.5em; line-height: 1em; margin-right: 13px;">
+<span class="text-3xl font-bold pr-4 float-left" style="font-family: arial; font-size: 3.5em; line-height: 1em; margin-right: 13px;">
     {{ $stepIndex + 1 }}
 </span>
 @endif

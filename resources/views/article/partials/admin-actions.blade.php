@@ -1,8 +1,9 @@
-<x-jet-dropdown align="right" >
+<x-jet-dropdown align="left" >
     <x-slot name="trigger">
             <span class="inline-flex rounded-md">
                 <button type="button"
-                        class="inline-flex border bg-primary-200 items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition">
+                        class="inline-flex border bg-primary-200 items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md
+                            text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition">
                     مدیریت
                     <svg class="mr-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                          viewBox="0 0 20 20" fill="currentColor">
@@ -27,6 +28,7 @@
         @php
             $designatedText = $article->is_translate_designated == 1 ? 'حذف از منتخب ترجمه' : 'منتخب ترجمه';
             $skipText = $article->is_skipped == 1 ? 'حذف از نادیده گرفتن' : 'نادیده گرفتن';
+            $publishText = $article->isPublished() ? 'عدم انتشار' : 'انتشار';
         @endphp
         <x-jet-dropdown-link href="{{ route('translate-designate-article', $article->id) }}">
             {{$designatedText}}
@@ -34,6 +36,10 @@
 
         <x-jet-dropdown-link href="{{ route('skip-article', $article->id) }}">
             {{$skipText}}
+        </x-jet-dropdown-link>
+
+        <x-jet-dropdown-link href="{{ route('make-publish', $article->id) }}">
+            {{$publishText}}
         </x-jet-dropdown-link>
 
         <x-jet-dropdown-link href="{{ route('make-assets-local', $article->id) }}" target='_blank'>

@@ -20,6 +20,7 @@
     "dependencies": {
         "cssnano": "^5.1.14",
         "daisyui": "^2.20.0",
-        "jquery": "^3.6.3"
+        "jquery": "^3.6.3",
+        "postcss-rtlcss": "^4.0.3"
     }
 }

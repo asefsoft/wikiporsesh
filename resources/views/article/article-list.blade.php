@@ -24,9 +24,7 @@
 
         @include('article.partials.filter-articles')
 
-        <x-article-collection :articleCollection="$collection">
-
-        </x-article-collection>
+        <x-article-collection :articleCollection="$collection"></x-article-collection>
     </section>
 
 </x-app-layout>

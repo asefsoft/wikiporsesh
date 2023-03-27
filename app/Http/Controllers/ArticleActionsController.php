@@ -36,6 +36,8 @@ class ArticleActionsController extends Controller
         return redirect()->back();
 
     }
+
+    // skip article
     public function skip(Article $article) {
 
         if($article->is_skipped == 1) {
@@ -45,6 +47,36 @@ class ArticleActionsController extends Controller
         else {
             $article->is_skipped = 1;
             $message = "مقاله به لیست نادیده گرفتن اضافه شد.";
+        }
+
+        $article->save(['timestamps'=>false]);
+
+        flashBanner($message, 'danger');
+
+        return redirect()->back();
+
+    }
+
+
+    // publish article
+    public function makePublish(Article $article) {
+
+        if($article->isPublished()) {
+            $article->published_at = null;
+            $message = "مقاله از انتشار خارج شد.";
+        }
+        else {
+            $article->published_at = now();
+            $message = "مقاله منتشر شد.";
+
+            // is translated?
+            if(! $article->isTranslated())
+                $message .= "  * هشدار: این مقاله هنوز ترجمه نشده است!";
+
+            // is assets local?
+
+            if(! $article->isAssetsLocal())
+                $message .= "  * هشدار: دارایی های این مقاله هنوز محلی نشده است!";
         }
 
         $article->save(['timestamps'=>false]);

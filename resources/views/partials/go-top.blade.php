@@ -1,5 +1,5 @@
 <button id="to-top-button" onclick="goToTop()" title="برو بالا"
-        class="hidden flex justify-center items-center hover:text-primary-300 fixed z-90 bottom-8 right-8 border-0 w-14 h-14 rounded-full drop-shadow-md bg-primary-800 text-white text-3xl font-bold">
+        class="hidden flex justify-center items-center hover:text-primary-300 fixed z-90 bottom-8 left-8 border-0 w-14 h-14 rounded-full drop-shadow-md bg-primary-800 text-white text-3xl font-bold">
 
     <svg
         aria-hidden="true"

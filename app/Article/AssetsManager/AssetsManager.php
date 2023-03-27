@@ -155,7 +155,14 @@ class AssetsManager {
     }
 
     public function getAssetStatusText(): string {
-        return sprintf("%s/%s از دارایی ها محلی هستند.", $this->totalLocalAssets, $this->totalAssets);
+        return sprintf("%s%% (%s/%s) از دارایی ها محلی هستند.", $this->getLocalAssetsPercentage(), $this->totalLocalAssets, $this->totalAssets);
+    }
+
+    public function getLocalAssetsPercentage(): int {
+        if($this->totalAssets == 0)
+            return 0;
+
+        return (int)(($this->totalLocalAssets / $this->totalAssets) * 100);
     }
 
 }

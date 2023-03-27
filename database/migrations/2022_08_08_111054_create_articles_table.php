@@ -21,9 +21,9 @@ return new class extends Migration
             $table->string('slug', 150)->index();
             $table->tinyInteger('total_sections')->unsigned()->index();
             $table->tinyInteger('total_steps')->unsigned()->index();
-            $table->string('title_fa',300)->nullable();
+            $table->string('title_fa',300)->nullable()->fulltext();
             $table->string('title_en',300);
-            $table->string('description_fa',500);
+            $table->string('description_fa',500)->fulltext();
             $table->string('description_en',300);
             $table->string('tips_fa',1000)->nullable();
             $table->string('tips_en',1000)->nullable();

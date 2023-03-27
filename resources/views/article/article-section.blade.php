@@ -1,12 +1,12 @@
 {{--Section Number and title--}}
-<div id="section-{{$sectionIndex + 1}}" class="flex mt-7 mb-3 rounded-sm">
-    <div class="bg-blue-500 text-sm absolute w-[60px] h-[60px] flex flex-col justify-center text-center">
+<div id="section-{{$sectionIndex + 1}}" class="flex mt-7 mb-5 rounded-sm">
+    <div class="bg-primary-800 text-sm absolute w-[60px] h-[60px] flex flex-col justify-center text-center text-white">
         @if(! $article->hasEqualSectionAndSteps())
         {{$article->getStepType()}}
         @endif
         <div class="text-lg font-semibold">{{$sectionIndex + 1 }}</div>
     </div>
-    <h2 class="text-xl text-white bg-primary-800 grow" style="padding: 16px 75px 16px 16px;">
+    <h2 class="md:text-lg min-h-[60px] text-white flex items-center grow bg-gradient-to-r to-cyan-500 from-primary-600 pl-[70px] md:pl-20 pr-3">
         {{$section->title_fa}}
     </h2>
 </div>

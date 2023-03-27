@@ -29,6 +29,6 @@
 
     {{-- Category --}}
     <div class="flex justify-center mt-3 mb-4">
-        {!! $article->getCategoryLinks('text-cerise-red-700 hover:text-white border border-cerise-red-700 hover:bg-cerise-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center') !!}
+        {!! $article->getCategoryLinks('text-amaranth-700 hover:text-white border border-amaranth-700 hover:bg-amaranth-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-center') !!}
     </div>
 </div>

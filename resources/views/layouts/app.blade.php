@@ -24,7 +24,9 @@
     <body dir='rtl' class="font-sans antialiased">
         <x-jet-banner />
 
-        <div class="min-h-screen bg-primary">
+        <div class="min-h-screen bg-gradient-to-r from-cyan-500 to-blue-500"
+{{--             style="background-image: linear-gradient(135deg, rgb(159, 191, 241) 0%, rgb(50, 76, 195) 100%);"--}}
+        >
             @livewire('navigation-menu')
 
             <!-- Page Heading -->
@@ -39,7 +41,7 @@
 
             <!-- Page Content -->
             <main>
-                <div class="py-5">
+                <div class="py-8">
                     <div class="max-w-[1366px] mx-auto sm:px-6 lg:px-8">
                         <div class="bg-white overflow-hidden shadow-xl sm:rounded-sm">
                             <div class="md:grid md:grid-cols-10 md:gap-4">

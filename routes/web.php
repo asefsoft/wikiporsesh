@@ -12,17 +12,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ArticleController::class, 'index'])->name('home-index');
 
-// asset routes to just allow us make route urls in the app
-Route::post('/static/images/{file}', function () {
-    abort(403);
-})->name('static.images');
-
-Route::post('/static/videos/{file}', function () {
-    abort(403);
-})->name('static.videos');
-
 
 Route::get('/article/{article}', [ArticleController::class, 'display'])->name('article-display');
+Route::get('/search', [ArticleController::class, 'search'])->name('articles-search');
 Route::get('/category/{category}', [CategoryController::class, 'display'])->name('category-display');
 Route::get('/categories', [CategoryController::class, 'list'])->name('categories-list');
 
@@ -31,14 +23,28 @@ Route::group(['middleware' => ['auth', 'can:manage']], function () {
     Route::get('/actions/translate-designate/{article}', [ArticleActionsController::class, 'translateDesignate'])->name('translate-designate-article');
     Route::get('/actions/skip/{article}', [ArticleActionsController::class, 'skip'])->name('skip-article');
     Route::get('/actions/make-assets-local/{article}', [ArticleActionsController::class, 'makeAssetsLocal'])->name('make-assets-local');
+    Route::get('/actions/make-publish/{article}', [ArticleActionsController::class, 'makePublish'])->name('make-publish');
 });
 
 Route::get('/test', function () {
 
+    // search article
+    $search = new \App\Article\SearchArticle("attract girl");
+    $normal = $search->search();
+    $full = $search->fullTextSearch();
+    dump($normal->pluck("title_fa"), $full->pluck("title_fa"));
+    exit();
+    // related articles
+    $related = new \App\Article\RelatedArticles(Article::inRandomOrder()->first());
+    $related->getArticles();
+
+
+    // translate
     $translator = new \App\Translate\AllCategoriesAutoTranslator();
     $translator->start();
     dd($translator->getStatusText(), $translator);
 
+    //asset
     $article = \App\Models\Article::inRandomOrder()->whereId(35)->first();
 
     $asset = new \App\Article\AssetsManager\AssetsManager($article);
@@ -118,6 +124,16 @@ Route::middleware([
     })->name('dashboard');
 });
 
+// asset routes to just allow us make route urls in the app
+Route::post('/static/images/{file}', function () {
+    abort(403);
+})->name('static.images');
+
+Route::post('/static/videos/{file}', function () {
+    abort(403);
+})->name('static.videos');
+
+
 DB::listen(function ($query) {
 
     if(isset($GLOBALS['STAT_QUERY_COUNT']) && isset($GLOBALS['STAT_QUERY_TIME'])) {
@@ -130,8 +146,10 @@ DB::listen(function ($query) {
         $GLOBALS['STAT_QUERIES'] = [];
     }
 
-    if(! isProduction())
+    if(! isProduction()) {
         $GLOBALS['STAT_QUERIES'][] = $query->sql;
+        $GLOBALS['LAST_QUERY'] = $query->sql;
+    }
 
     if ($GLOBALS['auth_checking'] ?? false) {
         return;

@@ -5,7 +5,7 @@
 <x-app-layout>
     <x-slot name="header">
         {{-- Article Title --}}
-        <h1 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h1 class="font-semibold text-lg md:text-xl text-gray-800 leading-tight">
             {{ $article->title_fa }}
             @can('manage')
                 <div class="absolute">
@@ -20,7 +20,7 @@
     </x-slot>
 
     {{-- Main Content of page --}}
-    <section id="article-content" class="col-span-7 px-5 py-3">
+    <section id="article-content" class="col-span-7 pl-5 pr-5 md:pr-0 py-3">
 
         {{-- Categories Breadcrumb --}}
         @include("article.partials.categories-breadcrumb")
@@ -40,7 +40,9 @@
     </section>
 
     {{-- Sidebar --}}
-    <aside class="bg-primary-400 col-span-3 px-3 py-2">
-        {{implode("<br>", fake()->sentences(15))}}
+    <aside class="col-span-3 px-3 py-2">
+        {{--@include("article.partials.related-articles") --}}
+        <x-related-articles :article="$article"/>
+
     </aside>
 </x-app-layout>
