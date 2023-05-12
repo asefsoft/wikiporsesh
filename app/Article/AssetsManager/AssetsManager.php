@@ -121,6 +121,11 @@ class AssetsManager {
             // make sure storage dir is exists
             AssetDownloader::createFolder($storePath);
             $assetUrl = $noneLocalAsset->getOriginalAssetUrl(); // url of asset
+
+            // asset original url not found!!
+            if($assetUrl == "")
+                continue;
+
             $extension = pathinfo($assetUrl, PATHINFO_EXTENSION);
             $finalStorePath = $storePath . $noneLocalAsset->getStoreFilename() . '.' . $extension;
 

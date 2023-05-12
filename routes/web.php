@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth', 'can:manage']], function () {
     Route::get('/actions/skip/{article}', [ArticleActionsController::class, 'skip'])->name('skip-article');
     Route::get('/actions/make-assets-local/{article}', [ArticleActionsController::class, 'makeAssetsLocal'])->name('make-assets-local');
     Route::get('/actions/make-publish/{article}', [ArticleActionsController::class, 'makePublish'])->name('make-publish');
+    Route::get('/actions/re-crawl/{article}', [ArticleActionsController::class, 'reCrawl'])->name('re-crawl');
 });
 
 Route::get('/test', function () {

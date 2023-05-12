@@ -23,7 +23,7 @@ class ProcessArticleDetail {
     protected bool $isPersisted = false;
     protected string $errorMessage = '';
     protected ?ArticleDetail $articleDetail;
-    private bool $forceToProcess;
+    private bool $forceToProcess = false;
     private bool $ignored = false;
 
     public function __construct(Url $crawledUrl, bool $forceToProcess = false) {
@@ -79,14 +79,18 @@ class ProcessArticleDetail {
     protected function shouldProcessAndSaveArticle(): bool {
         $should = true;
 
-        // is processed before and has article
+        // is it processed before and has article
         if($this->alreadyHasArticle()) {
             // dont process if it's not forced
-            if(! $this->forceToProcess)
+            if(! $this->forceToProcess) {
                 $should = false;
+                $this->errorMessage = "Article already is exists.";
+            }
             // dont process if Article was edited by me, even in force mode
-            elseif (!empty($this->crawledUrl?->article?->edited_at))
+            elseif (!empty($this->crawledUrl?->article?->isEdited()) && false) { // disabled for now
                 $should = false;
+                $this->errorMessage = "Article is edited therefore we can not re-crawl it.";
+            }
         }
 
         return $should;
@@ -106,7 +110,6 @@ class ProcessArticleDetail {
             'total_sections',
             'total_steps', 'image_url',
             'title_en',
-            'title_fa',
             'is_featured',
             'description_en',
             'tips_en',

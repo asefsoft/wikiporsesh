@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article\AssetsManager\AssetsManager;
+use App\Jobs\ProcessCrawledUrl;
 use App\Models\Article;
 use App\Translate\ArticleAutoTranslator;
 
@@ -85,6 +86,10 @@ class ArticleActionsController extends Controller
 
         return redirect()->back();
 
+    }
+
+    public function reCrawl(Article $article) {
+        ProcessCrawledUrl::dispatchSync($article->url, request("force", true));
     }
 
     // download all assets of article to the local storage

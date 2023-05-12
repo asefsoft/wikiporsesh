@@ -48,7 +48,7 @@ class AssetStorage {
     // we use this when asset already replaced with local, but we need to original asset url
     public function getTrackedAssetData() : string {
         $tracker = $this->assetStore->getTrackedAsset($this->storeField);
-        return $tracker->asset_url;
+        return $tracker->asset_url ?? "";
     }
 
     public function hasError() : bool {

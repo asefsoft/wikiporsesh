@@ -18,7 +18,7 @@ class ProcessCrawledUrl implements ShouldQueue
     protected Url $crawledUrl;
     private bool $force;
 
-    public function __construct(Url $crawledUrl, $force = false) {
+    public function __construct(Url $crawledUrl, bool $force = false) {
         $this->crawledUrl = $crawledUrl;
         $this->force = $force;
     }
@@ -27,6 +27,9 @@ class ProcessCrawledUrl implements ShouldQueue
     {
         $processor = new ProcessArticleDetail($this->crawledUrl, $this->force);
         $processor->process();
+
+        if($processor->hasError())
+            echo "There was error in ProcessCrawledUrl: " . $processor->getErrorMessage();
 
         unset($processor);
     }
