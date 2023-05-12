@@ -12,6 +12,8 @@
                 </div>
 
                 <!-- Navigation Links -->
+                @can('manage')
+
                 <div class="hidden space-x-8 sm:-my-px sm:ml-8 sm:flex">
                     <x-jet-nav-link href="{{ route('categories-list') }}" :active="request()->routeIs('categories-list')">
                         دسته بندی
@@ -21,31 +23,17 @@
 {{--                        مقاله تصادفی--}}
 {{--                    </x-jet-nav-link>--}}
                 </div>
+                @endcan
 
             </div>
 
             <!-- Search -->
             @include('partials.search-box')
-{{--            <div class="w-3/4 sm:w-96 flex flex-col justify-center">--}}
-{{--                <x-input placeholder="جستجو" class="flex pl-[62px]">--}}
-{{--                    <x-slot name="append">--}}
-{{--                        <div class="absolute inset-y-0 left-0 flex items-center p-0.5">--}}
-{{--                            <x-button--}}
-{{--                                class="h-full rounded-l-md"--}}
-{{--                                icon="search"--}}
-{{--                                primary--}}
-{{--                                fl1at--}}
-{{--                                squared--}}
-{{--                            />--}}
-{{--                        </div>--}}
-{{--                    </x-slot>--}}
-{{--                </x-input>--}}
-{{--            </div>--}}
-            <div class="hidden sm:flex sm:items-center sm:mr-6">
+            <div class="hidden sm:flex sm:items-center sm:ml-6">
 
                 <!-- Settings Dropdown -->
                 @if( Auth::check())
-                <div class="mr-3 relative">
+                <div class="ml-3 relative">
                     <x-jet-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())

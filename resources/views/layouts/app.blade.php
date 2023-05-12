@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html dir='rtl' lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html dir='rtl' lang="fa">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#324cc3"/>
+        <meta property="og:site_name" content="ویکی پرسش. محلی برای کسب دانش"/>
+        <link rel="shortcut icon" type="image/png" href="{{asset("static/stuff/logo1-cr.png")}}"/>
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        {{$head ?? ''}}
 
-        <!-- Fonts -->
-{{--        <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">--}}
-
-        <!-- Scripts -->
-{{--        @wireUiScripts--}}
+        <title>{{ config('app.name', 'no title!') }}</title>
 
         @vite(['resources/css/app.css','resources/css/manual.css', 'resources/js/app.js'])
 

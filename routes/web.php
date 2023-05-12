@@ -16,7 +16,7 @@ Route::get('/', [ArticleController::class, 'index'])->name('home-index');
 Route::get('/article/{article}', [ArticleController::class, 'display'])->name('article-display');
 Route::get('/search', [ArticleController::class, 'search'])->name('articles-search');
 Route::get('/category/{category}', [CategoryController::class, 'display'])->name('category-display');
-Route::get('/categories', [CategoryController::class, 'list'])->name('categories-list');
+Route::get('/categories', [CategoryController::class, 'list'])->name('categories-list')->middleware('can:manage');
 
 Route::group(['middleware' => ['auth', 'can:manage']], function () {
     Route::get('/actions/translate/{article}', [ArticleActionsController::class, 'translate'])->name('translate-article');

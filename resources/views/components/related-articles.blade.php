@@ -11,10 +11,12 @@
                 <div class="border border-gray-100 rounded-lg shadow-md p-4">
                     {{-- image --}}
                     <div class="flex justify-center">
-                        <img src="{{ $related->image_url }}" alt="{{ $related->title }}" class="rounded-md w-full max-w-[500px]">
+                        <a href="{{ $related->getArticleDisplayUrl() }}">
+                        <img data-src="{{ $related->image_url }}" alt="{{ $related->title }}" class="rounded-md w-full max-w-[500px] max-h-[245px] lazyload">
+                        </a>
                     </div>
                     <div class="mt-2">
-                        <a href="{{ route('article-display', $related) }}" class="text-lg font-bold text-gray-800">
+                        <a href="{{ $related->getArticleDisplayUrl() }}" class="text-lg font-bold text-gray-800">
                             {{ $related->title_fa }}
                         </a>
                         <p class="text-gray-600 mt-2">

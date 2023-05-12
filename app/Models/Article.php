@@ -78,6 +78,11 @@ class Article extends Model implements HasAssetTracker
         return $this->hasMany(ArticleVideo::class);
     }
 
+    // summary of description
+    public function getSummary() : string {
+        return strLimit($this->description_fa, 150);
+    }
+
     public function scopeTranslateDesignated(Builder $query) : Builder {
         return $query
                 ->where('is_translate_designated', 1)

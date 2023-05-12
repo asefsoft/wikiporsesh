@@ -3,6 +3,11 @@
 /** @var \App\Article\AssetsManager\AssetsManager $assetManager */
 ?>
 <x-app-layout>
+    <x-slot name="head">
+        <meta name="description" content="{{ $article->getSummary() }}"/>
+        <meta name="keywords" content="ویدئو، فیلم، سرگرمی، بازی، کلیپ، رایگان، دانلود, اینستاگرام  video, clip, stream, funny, instagram"/>
+    </x-slot>
+
     <x-slot name="header">
         {{-- Article Title --}}
         <h1 class="font-semibold text-lg md:text-xl text-gray-800 leading-tight">
@@ -46,3 +51,5 @@
 
     </aside>
 </x-app-layout>
+
+

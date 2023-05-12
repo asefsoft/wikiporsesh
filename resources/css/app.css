@@ -1,5 +1,6 @@
 /*@import "nunito-fonts.css";*/
-@import "vazir-fonts.css";
+/*@import "vazir-fonts.css";*/
+@import "iran-sans-fonts.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

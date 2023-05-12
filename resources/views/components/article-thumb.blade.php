@@ -14,7 +14,7 @@
     <figure class="flex justify-center">
         <img src="{{$article->image_url}}" alt="article poster" class="rounded-t-xl min-w-[4rem] min-h-[3rem]">
     </figure>
-    <h2 class="text-lg font-bold my-4 mx-3">{{ $article->title_fa }}</h2>
+    <h2 class="text-lg font-semibold my-4 mx-3">{{ $article->title_fa }}</h2>
     </a>
 
     {{-- Text --}}

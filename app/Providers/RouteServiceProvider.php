@@ -44,7 +44,7 @@ class RouteServiceProvider extends ServiceProvider
             $targetField = is_numeric($value) ? 'id' : "slug";
 
             $article = Article::with(['sections.steps','categories','videos'])
-                              ->where($targetField, $value)->first();
+                              ->where($targetField, urlencode($value))->first();
 
             return $article ?? abort(404);
         });

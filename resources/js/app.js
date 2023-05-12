@@ -1,5 +1,8 @@
 import './bootstrap';
 
+import lazySizes from 'lazysizes'; // 8K vendor
+lazySizes.cfg.expFactor  = 1; // load only visible images
+
 import Alpine from 'alpinejs';  // 40kb
 
 

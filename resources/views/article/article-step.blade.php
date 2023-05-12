@@ -11,13 +11,13 @@
 {{--    <img src="{{ $step->image_url }}" alt="step image" width="100%">--}}
 @elseif($step->hasImage())
     <figure class="flex justify-center">
-        <img src="{{ $step->image_url }}" alt="step image" width="100%" class="max-w-[500px]">
+        <img data-src="{{ $step->image_url }}" alt="step image" width="100%" class="max-w-[500px] lazyload">
     </figure>
 @endif()
 
 {{-- Step number--}}
 @if(! $section->isSingleStep())
-<span class="text-3xl font-bold pr-4 float-left" style="font-family: arial; font-size: 3.5em; line-height: 1em; margin-right: 13px;">
+<span class="text-3xl font-bold pr-4 float-left" style="font-size: 3.5em; line-height: 1em; margin-right: 13px;">
     {{ $stepIndex + 1 }}
 </span>
 @endif
