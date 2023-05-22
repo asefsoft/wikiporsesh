@@ -1,7 +1,7 @@
 {{-- Step Image & Video--}}
 @if($step->hasVideo())
     <video  controls controlslist="nofullscreen nodownload noremoteplayback noplaybackspeed"
-            class="max-w-[500px]"
+            class="max-w-[500px] mx-auto"
             preload='metadata' fluid="true" width="100%"
             poster='{{ $step->image_url }}'>
 
@@ -18,7 +18,7 @@
 
 {{-- Step number--}}
 @if(! $section->isSingleStep())
-<span class="text-3xl font-bold pr-4 float-left" style="font-size: 3.5em; line-height: 1em; margin-right: 13px;">
+<span class="text-3xl font-bold pr-4 pt-1 float-left" style="font-size: 3.5em; line-height: 1em; margin-right: 13px;">
     {{ $stepIndex + 1 }}
 </span>
 @endif
