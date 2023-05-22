@@ -31,7 +31,7 @@
         @include("article.partials.categories-breadcrumb")
 
         {{-- Article Desc --}}
-        <p id="article-desc" class="mt-3 mb-4">
+        <p id="article-desc" class="mt-3 mb-4 text-justify">
             {{$article->description_fa}}
         </p>
 
