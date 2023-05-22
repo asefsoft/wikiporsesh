@@ -16,7 +16,7 @@
                 preload='metadata' fluid="true"
                 poster='{{$getPosterUrl()}}'>
 
-            <source :src="state"
+            <source src="{{$getVideoUrl()}}"
                     type='video/mp4'
                     label='step-video'>
         </video>

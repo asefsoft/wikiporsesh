@@ -26,22 +26,14 @@ class DisplayVideo extends Field
         return $this;
     }
 
-    public function setPosterUrl($url): static
-    {
-//        $url->call($this);
-        $this->posterUrl = $url;
-//        $this->evaluate($url);
-//        $url(['ddd']);
-//        $this->setExtraAttributes([
-//            'poster' => $url
-//        ]);
-
-        return $this;
-    }
-
     public function getPosterUrl(): ?string
     {
-        return $this->evaluate($this->posterUrl);
+        return $this->evaluate(fn($record) => $record->poster_url);
+    }
+
+    public function getVideoUrl(): ?string
+    {
+        return $this->evaluate(fn($record) => $record->video_url);
     }
 
 

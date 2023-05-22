@@ -97,7 +97,6 @@ class ArticleResource extends Resource
                                 // show video if exists, otherwise show image
                                 DisplayVideo::make('video_url')->setDisplayAlign('center')
                                     ->hidden(fn($record) => empty($record->video_url))
-                                    ->setPosterUrl(fn($record) => $record->image_url)
                                     ->setDisplayWidth(400)->label(""),
 
                                 AdvanceTextarea::make('content_fa')->label("توضیحات")->required()
