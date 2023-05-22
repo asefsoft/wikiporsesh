@@ -13,6 +13,6 @@
 
 @if($articleCollection->shouldShowPaginator())
 <div class="my-5">
-    {{ $articleCollection->getArticles()->links() }}
+    {{ $articleCollection->getArticles()->links()->withQueryString() }}
 </div>
 @endif
