@@ -25,7 +25,7 @@
     </x-slot>
 
     {{-- Main Content of page --}}
-    <section id="article-content" class="col-span-7 pl-5 pr-5 md:pr-0 py-3">
+    <section id="article-content" class="col-span-7 pl-5 pr-5 md:pr-0 py-3 leading-loose">
 
         {{-- Categories Breadcrumb --}}
         @include("article.partials.categories-breadcrumb")

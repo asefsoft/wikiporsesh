@@ -181,8 +181,8 @@ class Article extends Model implements HasAssetTracker
 
     public function getStepType() : string {
         return match (strtolower($this->steps_type)) {
-            default => "روش",
-            "step" => "مرجله",
+            default => "مرحله",
+            "step" => "مرحله",
             "parts" => "قسمت",
             "sections" => "بخش",
         };

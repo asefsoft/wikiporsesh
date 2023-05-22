@@ -6,6 +6,7 @@ use App\Filament\Resources\ArticleResource\Pages;
 use App\Forms\Components\AdvanceTextArea;
 use App\Forms\Components\AdvanceTextInput;
 use App\Forms\Components\DisplayImage;
+use App\Forms\Components\DisplayVideo;
 use App\Models\Article;
 use Filament\Facades\Filament;
 use Filament\Forms;
@@ -88,8 +89,17 @@ class ArticleResource extends Resource
                             ->schema([
 //                                Forms\Components\TextInput::make('order')->label("مرحله")
 //                                    ->required()->disabled()->columnSpan(1),
+
+                                // show video if exists, otherwise show image
                                 DisplayImage::make('image_url')->setDisplayAlign('center')
+                                    ->hidden(fn($record) => !empty($record->video_url))
                                                                ->setDisplayWidth(400)->label(""),
+                                // show video if exists, otherwise show image
+                                DisplayVideo::make('video_url')->setDisplayAlign('center')
+                                    ->hidden(fn($record) => empty($record->video_url))
+                                    ->setPosterUrl(fn($record) => $record->image_url)
+                                    ->setDisplayWidth(400)->label(""),
+
                                 AdvanceTextarea::make('content_fa')->label("توضیحات")->required()
                                     ->rows(fn($record) => static::getRowsCountOfTextArea($record->content_fa))
                                     ->hint(fn($record) => getLeftOrderHtmlString($record?->content_en)),
@@ -111,7 +121,7 @@ class ArticleResource extends Resource
 
     private static function getRowsCountOfTextArea($content) : int {
         $contentLen = Str::length($content);
-        $rows = round($contentLen / 150);
+        $rows = round($contentLen / 120);
         $rows = max(2, $rows);
         $rows = min(10, $rows);
         return $rows;

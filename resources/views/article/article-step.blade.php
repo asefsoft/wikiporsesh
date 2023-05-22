@@ -23,7 +23,7 @@
 @endif
 
 {{-- Step Text--}}
-<p id="article-step" class="pb-3 text-justify leading-loose">
+<p id="article-step" class="pb-7 text-justify">
     {{ $step->content_fa }}
 </p>
 
