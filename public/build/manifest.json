@@ -1,0 +1,25 @@
+{
+  "public/fonts/iransans/IRANSansWeb_Medium.woff2": {
+    "file": "assets/IRANSansWeb_Medium.e23a67d1.woff2",
+    "src": "public/fonts/iransans/IRANSansWeb_Medium.woff2"
+  },
+  "public/fonts/iransans/IRANSansWeb.woff2": {
+    "file": "assets/IRANSansWeb.14db744e.woff2",
+    "src": "public/fonts/iransans/IRANSansWeb.woff2"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app.dcbe01f2.js",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/css/manual.css": {
+    "file": "assets/manual.de731d69.css",
+    "src": "resources/css/manual.css",
+    "isEntry": true
+  },
+  "resources/css/app.css": {
+    "file": "assets/app.9428bb7f.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  }
+}
