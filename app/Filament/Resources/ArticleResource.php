@@ -121,6 +121,11 @@ class ArticleResource extends Resource
     private static function getRowsCountOfTextArea($content) : int {
         $contentLen = Str::length($content);
         $rows = round($contentLen / 120);
+
+        //lines
+        $lines = count(explode("\n", $content));
+        $rows = max($rows, $lines);
+
         $rows = max(2, $rows);
         $rows = min(10, $rows);
         return $rows;
