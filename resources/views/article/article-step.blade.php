@@ -1,6 +1,7 @@
 {{-- Step Image & Video--}}
 @if($step->hasVideo())
     <video  controls controlslist="nofullscreen nodownload noremoteplayback noplaybackspeed"
+            class="max-w-[500px]"
             preload='metadata' fluid="true" width="100%"
             poster='{{ $step->image_url }}'>
 
