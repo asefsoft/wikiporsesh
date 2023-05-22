@@ -6,7 +6,7 @@
     </x-slot>
 
     {{-- Main Content of page --}}
-    <div class="bg-blue-100 col-span-7 px-3 py-2">
+    <div class="bg-blue-100 col-span-9 px-3 py-2">
         {{implode("<br>", fake()->sentences(30))}}
     </div>
 

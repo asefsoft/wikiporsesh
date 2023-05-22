@@ -43,7 +43,7 @@
                 <div class="pb-8 pt-4 sm:pt-8">
                     <div class="max-w-[1366px] mx-auto sm:px-6 lg:px-8">
                         <div class="bg-white overflow-hidden shadow-xl sm:rounded-sm">
-                            <div class="md:grid md:grid-cols-10 md:gap-4">
+                            <div class="md:grid md:grid-cols-12 md:gap-4">
                                 {{ $slot }}
                             </div>
                         </div>
