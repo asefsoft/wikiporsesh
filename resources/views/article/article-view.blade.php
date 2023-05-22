@@ -25,7 +25,7 @@
     </x-slot>
 
     {{-- Main Content of page --}}
-    <section id="article-content" class="col-span-9 pl-5 pr-5 md:pr-0 py-3 leading-loose">
+    <section id="article-content" class="lg:col-span-9 md:col-span-8 pl-5 pr-5 md:pr-0 py-3 leading-loose">
 
         {{-- Categories Breadcrumb --}}
         @include("article.partials.categories-breadcrumb")
@@ -45,7 +45,7 @@
     </section>
 
     {{-- Sidebar --}}
-    <aside class="col-span-3 px-3 py-2">
+    <aside class="lg:col-span-3 md:col-span-4 px-3 py-2">
         {{--@include("article.partials.related-articles") --}}
         <x-related-articles :article="$article"/>
 
