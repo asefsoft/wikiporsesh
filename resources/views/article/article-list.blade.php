@@ -14,7 +14,7 @@
     </x-slot>
 
     {{-- Main Content of page --}}
-    <section id="article-collection" class="col-span-10 px-5 py-3">
+    <section id="article-collection" class="col-span-12 px-5 py-3">
 
         @if(!empty($categoriesBreadcrumb))
             <div class="mb-2 mr-2">
