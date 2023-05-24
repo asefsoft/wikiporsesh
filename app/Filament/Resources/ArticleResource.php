@@ -50,10 +50,10 @@ class ArticleResource extends Resource
                     ->maxLength(500)
                     ->hint(fn($record) => getLeftOrderHtmlString($record?->description_en)),
                 AdvanceTextarea::make('tips_fa')->columnSpan(['default' => 2,'lg' => 1])
-                    ->maxLength(500)->label("نکات")
+                    ->maxLength(1000)->label("نکات")
                     ->hint(fn($record) => getLeftOrderHtmlString($record?->tips_en)),
                 AdvanceTextarea::make('warnings_fa')->columnSpan(['default' => 2,'lg' => 1])
-                    ->maxLength(500)->label("هشدار ها")
+                    ->maxLength(1000)->label("هشدار ها")
                     ->hint(fn($record) => getLeftOrderHtmlString($record?->warnings_en)),
 //                Forms\Components\TextInput::make('image_url')
 //                    ->maxLength(300),
