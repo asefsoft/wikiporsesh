@@ -38,10 +38,26 @@
         {{-- Sections Titles --}}
         @include("article.partials.sections")
 
-        {{-- Article Sections --}}
+        {{-- All article Sections and Steps --}}
         @foreach($article->sections as $sectionIndex => $section)
             @include("article.article-section", [$section, $sectionIndex])
         @endforeach
+
+        {{-- Article TIPS --}}
+        @if($article->hasTips())
+        <h3 class="inline-block text-xl font-bold">نکات:</h3>
+        <p id="article-tips" class="mt-3 mb-4 text-justify">
+            {!! str_replace("\n","<br/>", $article->tips_fa) !!}
+        </p>
+        @endif
+
+        {{-- Article WARNINGS --}}
+        @if($article->hasWarnings())
+        <h3 class="inline-block text-xl font-bold">هشدار ها:</h3>
+        <p id="article-warnings" class="mt-3 mb-4 text-justify">
+            {!! str_replace("\n","<br/>", $article->warnings_fa) !!}
+        </p>
+        @endif
     </section>
 
     {{-- Sidebar --}}

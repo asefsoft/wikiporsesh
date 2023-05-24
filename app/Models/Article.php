@@ -118,6 +118,14 @@ class Article extends Model implements HasAssetTracker
         return ! empty($this->edited_at);
     }
 
+    public function hasTips() : bool {
+        return ! empty($this->tips_fa);
+    }
+
+    public function hasWarnings() : bool {
+        return ! empty($this->warnings_fa);
+    }
+
 
     public function isTranslated() : bool {
         return $this->is_translated || $this->auto_translated_percent >= 90;
