@@ -36,7 +36,7 @@ class ArticleAutoTranslator {
         $textToBeTranslate = $this->article->description_fa;
         if(!empty($textToBeTranslate) && $textToBeTranslate == $this->article->description_en) {
             if ($this->translateText($textToBeTranslate)) {
-                $this->article->description_fa = $textToBeTranslate
+                $this->article->description_fa = $textToBeTranslate;
                 $this->article->save();
             }
             else {
