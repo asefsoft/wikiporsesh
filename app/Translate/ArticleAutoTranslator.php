@@ -154,8 +154,8 @@ class ArticleAutoTranslator {
 
     public function getStatusText() : string {
 
-        if($this->stepsToBeTranslate == 0)
-            return "There was nothing to be translated.";
+//        if($this->stepsToBeTranslate == 0)
+//            return "There was nothing to be translated.";
 
         $percent = $this->getTranslatedPercent();
 
