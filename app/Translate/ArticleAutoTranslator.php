@@ -25,9 +25,24 @@ class ArticleAutoTranslator {
     }
 
     public function start() {
+        $this->translateDescription();
         $this->translateArticleSectionsNames();
         $this->translateArticleFields();
         $this->translateSteps();
+    }
+
+    // translate description of article
+    private function translateDescription(): void {
+        $textToBeTranslate = $this->article->description_fa;
+        if(!empty($textToBeTranslate) && $textToBeTranslate == $this->article->description_en) {
+            if ($this->translateText($textToBeTranslate)) {
+                $this->article->description_fa = $textToBeTranslate
+                $this->article->save();
+            }
+            else {
+                $this->failedTranslate ++;
+            }
+        }
     }
 
     // sections titles
@@ -181,5 +196,7 @@ class ArticleAutoTranslator {
     private function getTranslatedAndSkippedStepsCount() : int {
         return $this->stepsTranslated + $this->stepsSkipped;
     }
+
+
 
 }
