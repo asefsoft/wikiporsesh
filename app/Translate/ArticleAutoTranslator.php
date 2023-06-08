@@ -38,6 +38,10 @@ class ArticleAutoTranslator {
             if ($this->translateText($textToBeTranslate)) {
                 $this->article->description_fa = $textToBeTranslate;
                 $this->article->save();
+
+                logError(sprintf("article %s description is auto translated.",
+                    $this->article->id
+                ), 'info');
             }
             else {
                 $this->failedTranslate ++;

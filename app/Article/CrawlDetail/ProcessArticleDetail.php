@@ -146,9 +146,9 @@ class ProcessArticleDetail {
     private function getArticleFullDetails(ArticleUrl $articleUrl) : array {
         $articleDetail = $this->articleDetail;
         $title   = Str::limit($articleDetail->getArticleTitle(), 300, '');
-        $desc    = Str::limit($articleDetail->getArticleDescription(), 300, '');
-        $tips    = Str::limit($articleDetail->getArticleTips(), 500, '');
-        $warning = Str::limit($articleDetail->getArticleWarnings(), 500, '');
+        $desc    = Str::limit($articleDetail->getArticleDescription(), 500, '');
+        $tips    = Str::limit($articleDetail->getArticleTips(), 1000, '');
+        $warning = Str::limit($articleDetail->getArticleWarnings(), 1000, '');
 
         return [
             'site_id'        => $articleUrl->getSiteId(),
