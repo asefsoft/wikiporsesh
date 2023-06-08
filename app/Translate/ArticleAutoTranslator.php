@@ -34,6 +34,11 @@ class ArticleAutoTranslator {
     // translate description of article
     private function translateDescription(): void {
         $textToBeTranslate = $this->article->description_fa;
+
+        logError(sprintf("article %s description: %s, equal: %s",
+            $this->article->id, strLimit($textToBeTranslate), $textToBeTranslate == $this->article->description_en,
+        ), 'info');
+
         if(!empty($textToBeTranslate) && $textToBeTranslate == $this->article->description_en) {
             if ($this->translateText($textToBeTranslate)) {
                 $this->article->description_fa = $textToBeTranslate;
