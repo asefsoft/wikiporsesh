@@ -16,6 +16,8 @@ class ArticleAutoTranslator {
     private int $stepsTranslated = 0;
     private int $stepsSkipped = 0;
 
+    private int $totalTranslated = 0;
+
     private bool $isDebugging = false;
 
     public function __construct(
@@ -44,6 +46,8 @@ class ArticleAutoTranslator {
                 $this->article->description_fa = $textToBeTranslate;
                 $this->article->save();
 
+                $this->totalTranslated++;
+
                 logError(sprintf("article %s description is auto translated.",
                     $this->article->id
                 ), 'info');
@@ -63,6 +67,7 @@ class ArticleAutoTranslator {
             if(!empty($textToBeTranslate) && $textToBeTranslate == $section->title_en) {
                 // do translate
                 if ($this->translateText($textToBeTranslate)) {
+                    $this->totalTranslated++;
 
                     $section->title_fa = $textToBeTranslate;
                     $section->save();
@@ -89,6 +94,7 @@ class ArticleAutoTranslator {
 
                 // translate field
                 if ($this->translateText($textToBeTranslate)) {
+                    $this->totalTranslated++;
 
                     $this->article->setAttribute($field . "_fa", $textToBeTranslate);
 
@@ -161,13 +167,17 @@ class ArticleAutoTranslator {
 
         $skippedSteps = $this->stepsSkipped > 0 ? sprintf(" %s skipped steps", $this->stepsSkipped) : "";
 
-        return sprintf("Translated %s%% of steps. %s/%s steps.%s",
+        return sprintf("Total translated: %s, Translated %s%% of steps. %s/%s steps. skipped steps: %s. Failed translations: %s.",
+            $this->totalTranslated,
             $percent, $this->stepsTranslated, $this->stepsToBeTranslate,
-            $skippedSteps
+            $skippedSteps, $this->failedTranslate
         );
     }
 
     private function getTranslatedPercent() : int {
+        if ($this->stepsToBeTranslate == 0)
+            return 0;
+
         return (int)(($this->getTranslatedAndSkippedStepsCount() / $this->stepsToBeTranslate) * 100);
     }
 
